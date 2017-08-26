@@ -6,5 +6,5 @@ package network;
  *
  */
 public class DBN {
-
+	
 }

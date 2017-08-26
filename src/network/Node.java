@@ -14,7 +14,27 @@ public class Node {
 	/**
 	 * Used for training so we can tell if the state changed
 	 */
-	private boolean prevState;
+	private boolean prevState = false;
+	
+	/**
+	 * Used mainly for toString to identify the node
+	 */
+	private int index;
+	
+	/**
+	 * Default constructor
+	 */
+	public Node() {
+		//Nothing
+	}
+	
+	/**
+	 * Constructor w/ index specification
+	 * @param index
+	 */
+	public Node(int index) {
+		this.index = index;
+	}
 	
 	/**
 	 * Getter for state and prevState
@@ -29,5 +49,12 @@ public class Node {
 	 * @param state
 	 */
 	public void setState(boolean state) { this.prevState = this.state; this.state = state; }
+	
+	/**
+	 * toString
+	 */
+	public String toString() {
+		return "< " + index + " >";
+	}
 
 }

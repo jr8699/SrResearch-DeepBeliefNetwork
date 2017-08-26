@@ -51,7 +51,36 @@ public class RBM {
 		this.learningRate = learningRate;
 		this.bias = new float[row1Nodes+row2Nodes];
 		this.weights = new Weight[row1Nodes*row2Nodes];
-		//init weights
+		initRows();
+		initWeights();
+	}
+	
+	/**
+	 * Creates all the node objects for the row arrays
+	 */
+	private void initRows() {
+		for(int i = 0;i < row1.length;i++) {
+			row1[i] = new Node(i);
+		}
+		
+		for(int i = 0;i < row2.length;i++) {
+			row2[i] = new Node(i);
+		}
+	}
+	
+	/**
+	 * Initializes the weight matrix with random values
+	 * @param w
+	 */
+	private void initWeights() {
+		//connect all row1 nodes to all row2 nodes
+		//randomize the weight between each of the nodes along the way
+		int w = 0;
+		for(int i = 0;i < this.row1.length;i++) {
+			for(int j = 0;j < this.row2.length;j++) {
+				this.weights[w++] = new Weight((float)Math.random(),row1[i],row2[j]);
+			}
+		}
 	}
 	
 	/**
@@ -103,13 +132,13 @@ public class RBM {
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
 			if(rand<=probability) { //toggle the node
 				n.setState(true);
-				System.out.println("Node Activated with probability :" + probability + "and AE :" + AE);
+				System.out.println("Node Activated with probability : " + probability + " and AE : " + AE);
 			}else {
 				n.setState(false);
-				System.out.println("Node Deactivated with probability :" + probability + "and AE :" + AE);
+				System.out.println("Node Deactivated with probability : " + probability + " and AE : " + AE);
 			}
 		}else {
-			Node n = nodeWeights[0].getLeft(); //should be same right node for all
+			Node n = nodeWeights[0].getLeft(); //should be same left node for all
 			float b;
 			b = bias[node]; //grab bias
 			
@@ -123,10 +152,10 @@ public class RBM {
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
 			if(rand<=probability) { //toggle the node
 				n.setState(true);
-				System.out.println("Node Activated with probability :" + probability + "and AE :" + AE);
+				System.out.println("Node Activated with probability : " + probability + " and AE : " + AE);
 			}else {
 				n.setState(false);
-				System.out.println("Node Deactivated with probability :" + probability + "and AE :" + AE);
+				System.out.println("Node Deactivated with probability : " + probability + " and AE : " + AE);
 			}
 		}
 	}
@@ -140,40 +169,57 @@ public class RBM {
 		setRow1(input); //Set row to do C.D. on
 		//Do C.D. for row2 (POS phase)
 		//An odd looking loop but it beats scanning the weights matrix 60,000 some times
-		for(int i = 0; i < weights.length/row1.length;i++) {
+		System.out.println("Positive:");
+		for(int i = 0; i < row2.length;i++) {
 			Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
 			int g = 0;
-			for(int j = i;j < weights.length;j += row2.length) { //gather the weights
-				nodeWeights[g++] = weights[j];
+			for(int j = 0;j < row1.length;j++) { //gather the weights
+				nodeWeights[g++] = weights[i+(j*row2.length)];
 			}
 			toggleNode(2,i,nodeWeights);
 		}
 		
-		//Do C.D. the other way
-		for(int i = 0; i < weights.length/row2.length;i+=row2.length) {
+		//Do C.D. the other way (Reconstruction)
+		System.out.println("Reconstruction:");
+		for(int i = 0; i < row1.length;i++) {
 			Weight nodeWeights[] = new Weight[row2.length]; //store all weight values for a node
 			int g = 0;
-			for(int j = i;j < row2.length;j++) { //gather the weights
-				nodeWeights[g++] = weights[j];
+			for(int j = 0;j < row2.length;j++) { //gather the weights
+				nodeWeights[g++] = weights[j+(i*row2.length)];
 			}
 			toggleNode(1,i,nodeWeights);
 		}
 		
 		//Do C.D. for row2 (Neg phase)
-		for(int i = 0; i < weights.length/row1.length;i++) {
+		System.out.println("Negative:");
+		for(int i = 0; i < row2.length;i++) {
 			Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
 			int g = 0;
-			for(int j = i;j < weights.length;j += row2.length) { //gather the weights
-				nodeWeights[g++] = weights[j];
+			for(int j = 0;j < row1.length;j++) { //gather the weights
+				nodeWeights[g++] = weights[i+(j*row2.length)];
 			}
 			toggleNode(2,i,nodeWeights);
 		}
 		
 		//Update weights
 		for(Weight w : weights) {
-			float pos = w.getRight().getPrevState() ? 1 : 0 * (w.getLeft().getPrevState() ? 1 : 0);
-			float neg = w.getRight().getState() ? 1 : 0 * (w.getLeft().getState() ? 1 : 0);
-			w.setWeight(w.getWeight()-learningRate*(pos-neg));
+			float pos = (w.getRight().getPrevState() ? 1 : 0) * (w.getLeft().getPrevState() ? 1 : 0);
+			float neg = (w.getRight().getState() ? 1 : 0) * (w.getLeft().getState() ? 1 : 0);
+			w.setWeight(w.getWeight()-(learningRate*(pos-neg)));
+		}
+		
+		//Update bias (row1)
+		for(int i = 0;i < row1.length;i++) {
+			float pos = (this.row1[i].getPrevState() ? 1 : 0) * 1;
+			float neg = (this.row1[i].getState() ? 1 : 0) * 1;
+			bias[i] -= learningRate*(pos-neg);
+		}
+		
+		//Update bias (row2)
+		for(int i = 0;i < row2.length;i++) {
+			float pos = (this.row2[i].getPrevState() ? 1 : 0) * 1;
+			float neg = (this.row2[i].getState() ? 1 : 0) * 1;
+			bias[i+row1.length] -= learningRate*(pos-neg);
 		}
 		
 		System.out.println("PreTraining step finished!");
@@ -184,9 +230,14 @@ public class RBM {
 	 */
 	public void dumpRBM() {
 		for(int i = 0; i < weights.length; i++) {
-			System.out.println(weights[i].getLeft().getState() + "   "
+			System.out.println(weights[i].getLeft().getState() + "-" + weights[i].getLeft() + "   "
 								+ weights[i].getWeight() + "   "
-								+ weights[i].getRight().getState());
+								+ weights[i].getRight().getState() + "-" + weights[i].getRight());
 		}
+		/**
+		for(int i = 0; i < row1.length; i++) {
+			System.out.println(row1[i].getState());
+		}
+		*/
 	}
 }
