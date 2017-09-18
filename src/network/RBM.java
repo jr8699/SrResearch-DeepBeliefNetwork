@@ -25,12 +25,6 @@ public class RBM {
 	private float bias[];
 	
 	/**
-	 * The previous/next RBM that this RBM is connected to
-	 */
-	private RBM prevRBM;
-	private RBM nextRBM;
-	
-	/**
 	 * The learning rate that the RBM will follow
 	 */
 	private float learningRate;
@@ -43,11 +37,9 @@ public class RBM {
 	 * @param next
 	 * @param learningRate
 	 */
-	public RBM (int row1Nodes, int row2Nodes, RBM prev, RBM next, float learningRate) {
+	public RBM (int row1Nodes, int row2Nodes, float learningRate) {
 		this.row1 = new Node[row1Nodes];
 		this.row2 = new Node[row2Nodes];
-		this.prevRBM = prev;
-		this.nextRBM = next;
 		this.learningRate = learningRate;
 		this.bias = new float[row1Nodes+row2Nodes];
 		this.weights = new Weight[row1Nodes*row2Nodes];
@@ -240,4 +232,33 @@ public class RBM {
 		}
 		*/
 	}
+	
+	/**
+	 * Set row1 to row2 of the previous rbm
+	 * @param prbm
+	 */
+	public void tieToPrev(RBM prbm){
+		this.row1 = prbm.getRow2();
+		
+		//initweights to set the weight matrix to use the new node objects
+		initWeights();
+	}
+	
+	/**
+	 * Set row2 to row 1 of the next rbm
+	 * @param nrbm
+	 */
+	public void tieToNext(RBM nrbm){
+		this.row2 = nrbm.getRow1();
+		
+		//initweights to set the weight matrix to use the new node objects
+		initWeights();
+	}
+	
+	/**
+	 * Getters for the rows of the RBM
+	 * @return
+	 */
+	public Node[] getRow1() { return this.row1; }
+	public Node[] getRow2() { return this.row2; }
 }
