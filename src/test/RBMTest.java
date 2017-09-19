@@ -84,4 +84,40 @@ public class RBMTest {
 		//Don't need to get Negative phase since pos/neg share the same function
 	}
 
+	@Test
+	public void weightUpdateTest() {
+		RBM rbm = new RBM(2,2,0.5f);
+		
+		//setup input
+		boolean in1[] = new boolean[2];
+		in1[0] = true;
+		in1[1] = false;
+		boolean in2[] = new boolean[2];
+		in2[0] = true;
+		in2[1] = true;
+		boolean in3[] = new boolean[2];
+		in3[0] = false;
+		in3[1] = false;
+		
+		//Mimic CD
+		rbm.setRow1(in1);
+		rbm.setRow2(in2);
+		rbm.setRow1(in3);
+		rbm.setRow2(in2);
+		
+		//set custom weights
+		rbm.getWeights()[0].setWeight(0.0f);
+		rbm.getWeights()[1].setWeight(0.25f);
+		rbm.getWeights()[2].setWeight(0.75f);
+		rbm.getWeights()[3].setWeight(0.44f);
+		
+		//do update
+		rbm.updateWeightsAndBias();
+		
+		//check new values
+		assertEquals(0.5f,rbm.getWeights()[0].getWeight(), 0.001); //should not change
+		assertEquals(0.75f,rbm.getWeights()[1].getWeight(), 0.001); //increase by 0.5
+		assertEquals(0.75f,rbm.getWeights()[2].getWeight(), 0.001); //should not change
+		assertEquals(0.44f,rbm.getWeights()[3].getWeight(), 0.001); //should not change
+	}
 }
