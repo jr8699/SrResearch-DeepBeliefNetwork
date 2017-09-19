@@ -51,6 +51,12 @@ public class Node {
 	public void setState(boolean state) { this.prevState = this.state; this.state = state; }
 	
 	/**
+	 * Getter for index
+	 * @return
+	 */
+	public int getIndex() { return this.index; }
+	
+	/**
 	 * toString
 	 */
 	public String toString() {
