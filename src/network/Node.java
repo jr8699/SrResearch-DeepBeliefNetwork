@@ -27,7 +27,7 @@ public class Node {
 	public Node() {
 		//Nothing
 	}
-	
+
 	/**
 	 * Constructor w/ index specification
 	 * @param index
@@ -61,6 +61,17 @@ public class Node {
 	 */
 	public String toString() {
 		return "< " + index + " >";
+	}
+	
+	/**
+	 * For comparing Node references
+	 */
+	@Override
+	public boolean equals(Object o) {
+		if(this == o)
+			return true;
+		else
+			return false;
 	}
 
 }

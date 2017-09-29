@@ -66,4 +66,10 @@ public class DBN {
 	public void preTrainingOneStep(String document){
 		
 	}
+	
+	/**
+	 * Getter for the array of RBMs
+	 * @return
+	 */
+	public RBM[] getRBMArray() { return this.rbmArray; }
 }
