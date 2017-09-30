@@ -30,6 +30,11 @@ public class RBM {
 	private float learningRate;
 	
 	/**
+	 * Lock state of the RBM for training
+	 */
+	private boolean locked;
+	
+	/**
 	 * Constructor
 	 * @param row1Nodes
 	 * @param row2Nodes
@@ -38,6 +43,7 @@ public class RBM {
 	 * @param learningRate
 	 */
 	public RBM (int row1Nodes, int row2Nodes, float learningRate) {
+		this.locked = false;
 		this.row1 = new Node[row1Nodes];
 		this.row2 = new Node[row2Nodes];
 		this.learningRate = learningRate;
@@ -158,9 +164,7 @@ public class RBM {
 	 * Conducts a step of pretraining for the RBM via contrastive divergence
 	 * @param
 	 */
-	public void preTrainingStep(boolean input[]) {
-		setRow1(input); //Set row to do C.D. on
-		
+	public void preTrainingStep() {
 		//positive phase
 		activationPhase();
 		
@@ -171,7 +175,8 @@ public class RBM {
 		activationPhase();
 		
 		//update weights and biases to end training step
-		updateWeightsAndBias();
+		//Don't do if locked
+		if(!locked) updateWeightsAndBias();
 		
 		System.out.println("PreTraining step finished!");
 	}
@@ -195,6 +200,7 @@ public class RBM {
 	public void activationPhase() {
 		//Do C.D. for row2 (POS/NEG phase)
 		//An odd looking loop but it beats scanning the weights matrix thousands of times
+		System.out.println("Activation Phase:");
 		for(int i = 0; i < row2.length;i++) {
 			Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
 			int g = 0;
@@ -278,4 +284,12 @@ public class RBM {
 	 * @return
 	 */
 	public Weight[] getWeights() { return this.weights; }
+	
+	/**
+	 * Toggles the lock state of the RBM
+	 */
+	public void toggleLock() {
+		if(!locked) locked = true;
+		else locked = false;
+	}
 }

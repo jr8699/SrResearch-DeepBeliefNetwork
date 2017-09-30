@@ -1,5 +1,7 @@
 package network;
 
+import java.util.List;
+
 import io.DBNInputLoader;
 
 /**
@@ -61,10 +63,54 @@ public class DBN {
 		for(int i = 0; i < rbmNum-1;i++){
 			this.rbmArray[i].tieToNext(this.rbmArray[i+1]);
 		}
+		
+		//Load top50 words
+		loadTop50();
 	}
 	
-	public void preTrainingOneStep(String document){
+	/**
+	 * Do one step of C.D. w/ category, doc, and rbms to train
+	 * @param cat
+	 * @param doc
+	 */
+	public void preTrainingOneStep(int rbm, boolean values[]){
+		int j = 0;
+		this.rbmArray[0].setRow1(values); //set beginning values
 		
+		while(j < rbm) {
+			if(j > 0) { //propagate input to current rbm
+				int g = 0;
+				while(g < j) { // lock, propagate, unlock
+					this.rbmArray[g].toggleLock(); //should be false before toggle
+					this.rbmArray[g].preTrainingStep();
+					this.rbmArray[g].toggleLock();
+					g++;
+				}
+			}
+			this.rbmArray[j].preTrainingStep();
+			j++;
+		}
+	}
+	
+	/**
+	 * Compares all top50 words against the words in a document
+	 * Set a boolean matrix accordingly
+	 * @param cat
+	 * @param doc
+	 * @return
+	 */
+	public boolean[] scanDocument(int cat, int doc) {
+		List<String> document = loader.getDocument(cat,doc);
+		boolean values[] = new boolean [top50.length*50]; //hard coded for simplicity, extremely unlikely to change
+		//1d array for simplicity
+		for(int i = 0; i < top50.length; i++) {
+			for(int j = 0; j < 50; j++) {
+				for(int g = 0; g < document.size();g++) {
+					if(top50[i][j] == document.get(g)) values[i + (i * 50)] = true;
+				}
+			}
+		}
+		return values;
 	}
 	
 	/**
@@ -72,4 +118,25 @@ public class DBN {
 	 * @return
 	 */
 	public RBM[] getRBMArray() { return this.rbmArray; }
+	
+	/**
+	 * Getter for the top 50 data structure
+	 * @return
+	 */
+	public String[][] getTop50() { return this.top50; }
+	
+	/**
+	 * Load the top50 words
+	 */
+	private void loadTop50() {
+		this.top50 = this.loader.loadTop50();
+	}
+	
+	/**
+	 * Set start values directly, alternative to scanning a document for the values
+	 * @param values
+	 */
+	public void setBeginning(boolean[] values) {
+		this.rbmArray[0].setRow1(values);
+	}
 }
