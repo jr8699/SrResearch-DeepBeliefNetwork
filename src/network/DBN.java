@@ -43,7 +43,7 @@ public class DBN {
 					String catNames[]){
 		
 		//Loader for input for the network
-		this.loader = new DBNInputLoader(top50Dir, docDir, numCat, docsPerCat, catNames);
+		this.loader = new DBNInputLoader(top50Dir, docDir, numCat, docsPerCat);
 		
 		//all rbms in the network
 		this.rbmArray = new RBM[rbmNum];
@@ -104,9 +104,12 @@ public class DBN {
 		boolean values[] = new boolean [top50.length*50]; //hard coded for simplicity, extremely unlikely to change
 		//1d array for simplicity
 		for(int i = 0; i < top50.length; i++) {
-			for(int j = 0; j < 50; j++) {
+			for(int j = 0; j < top50[i].length; j++) {
 				for(int g = 0; g < document.size();g++) {
-					if(top50[i][j] == document.get(g)) values[i + (i * 50)] = true;
+					if(top50[i][j].equals(document.get(g))) {
+						values[j + (i * 50)] = true;
+						break; //Stop looking for that word
+					}
 				}
 			}
 		}

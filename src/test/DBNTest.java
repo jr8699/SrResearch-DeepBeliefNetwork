@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import io.DBNInputLoader;
 import network.DBN;
 import network.RBM;
 
@@ -74,6 +75,55 @@ public class DBNTest {
 		
 		//loader.getDocument(cat, doc);
 		//boolean values[] = scanDocument(cat,doc);
+	}
+	
+	@Test
+	public void testLoader() {
+		int docs[] = new int[5];
+		docs[0] = 100;
+		docs[1] = 100;
+		docs[2] = 100;
+		docs[3] = 100;
+		docs[4] = 100;
+		
+		DBNInputLoader loader = new DBNInputLoader("C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs);
+		
+		assert(loader.getDocument(0, 3).get(14).equals("are"));
+		assert(loader.getDocument(0, 3).get(0).equals("Yukos"));
+	}
+	
+	@Test
+	public void testBigDBN() {
+		int arr[][] = new int[3][2];
+		arr[0][0] = 100;
+		arr[0][1] = 100;
+		arr[1][0] = 100;
+		arr[1][1] = 100;
+		arr[2][0] = 100;
+		arr[2][1] = 5; //softmax row
+		
+		int docs[] = new int[5];
+		docs[0] = 100;
+		docs[1] = 100;
+		docs[2] = 100;
+		docs[3] = 100;
+		docs[4] = 100;
+		
+		String names[] = new String[5];
+		names[0] = "business";
+		names[1] = "entertainment";
+		names[2] = "politics";
+		names[3] = "sport";
+		names[4] = "tech";
+		
+		DBN dbn = new DBN(3,arr,0.5f,"C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs,names);
+		
+		//Test scanning
+		assert(dbn.scanDocument(0, 3)[1] == true); //Yukos
+		assert(dbn.scanDocument(0, 3)[183] == true); //back
+		assert(dbn.scanDocument(0, 3)[144] == false);
+		
+		
 	}
 
 }

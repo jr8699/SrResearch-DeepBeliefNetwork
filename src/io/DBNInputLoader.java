@@ -14,11 +14,10 @@ public class DBNInputLoader {
 	
 	/**
 	 * Number of categories and how many docs to scan
-	 * per category. Also category names
+	 * per category.
 	 */
 	private int numCat;
 	private int docsPerCat[];
-	private String catNames[];
 	
 	/**
 	 * Directories for the top 50 words
@@ -32,13 +31,11 @@ public class DBNInputLoader {
 	private String docDir;
 	
 	//Constructor
-	public DBNInputLoader(String top50Dir, String docDir, int numCat, int docsPerCat[],
-							String catNames[]){
+	public DBNInputLoader(String top50Dir, String docDir, int numCat, int docsPerCat[]){
 		this.top50Dir = top50Dir;
 		this.docDir = docDir;
 		this.numCat = numCat;
 		this.docsPerCat = docsPerCat;
-		this.catNames = catNames;
 	}
 	
 	/**
@@ -56,6 +53,7 @@ public class DBNInputLoader {
 		}else{
 			path = docDir + "\\" + cat + "\\" + i + ".txt";
 		}
+
 		
 		File f = new File(path);
 		List<String> doc = new ArrayList<String>();
