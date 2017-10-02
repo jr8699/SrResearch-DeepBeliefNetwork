@@ -69,7 +69,15 @@ public class DBN {
 	}
 	
 	/**
-	 * Do one step of C.D. w/ category, doc, and rbms to train
+	 * Does all steps of pretraining for all input
+	 * Need to consult on how to do this (Random documents, each category at once, etc.)
+	 */
+	public void fullPreTraining() {
+		
+	}
+	
+	/**
+	 * Do one step of C.D. w/ category, doc, and rbm index to train
 	 * @param cat
 	 * @param doc
 	 */
@@ -77,18 +85,34 @@ public class DBN {
 		int j = 0;
 		this.rbmArray[0].setRow1(values); //set beginning values
 		
-		while(j < rbm) {
-			if(j > 0) { //propagate input to current rbm
-				int g = 0;
-				while(g < j) { // lock, propagate, unlock
-					this.rbmArray[g].toggleLock(); //should be false before toggle
-					this.rbmArray[g].preTrainingStep();
-					this.rbmArray[g].toggleLock();
-					g++;
-				}
+		while(j < rbm) { //propagate
+			this.rbmArray[j].activationPhase();
+		}
+		this.rbmArray[j].preTrainingStep();
+	}
+	
+	/**
+	 * One step of the backpropagation algorithm
+	 * @param input
+	 * @param expected
+	 */
+	public void backpropOneStep(boolean input[], boolean expected[]) {
+		this.rbmArray[0].setRow1(input); //Set input
+		for(int i = 0; i < this.rbmArray.length; i++) { //Propagate input
+			this.rbmArray[i].activationPhase();
+		}
+		
+		//Assuming expected is the same length as the last row
+		for(int i = 0;i < expected.length; i++) {
+			if(expected[i] != rbmArray[rbmArray.length-1].getRow2()[i].getState()) { //detect error
+				rbmArray[rbmArray.length-1].getRow2()[i].setState(expected[i]); //set new state
 			}
-			this.rbmArray[j].preTrainingStep();
-			j++;
+		}
+		
+		//Backpropogate the corrected output
+		for(int i = this.rbmArray.length-1;i > -1; i--) {
+			this.rbmArray[i].reconstructionPhase(); //activate nodes on row1
+			this.rbmArray[i].updateWeightsAndBias(); //compare current/previous states and update the weights/bias
 		}
 	}
 	

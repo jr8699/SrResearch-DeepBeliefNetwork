@@ -95,7 +95,7 @@ public class DBNTest {
 	@Test
 	public void testBigDBN() {
 		int arr[][] = new int[3][2];
-		arr[0][0] = 100;
+		arr[0][0] = 250;
 		arr[0][1] = 100;
 		arr[1][0] = 100;
 		arr[1][1] = 100;
@@ -122,7 +122,6 @@ public class DBNTest {
 		assert(dbn.scanDocument(0, 3)[1] == true); //Yukos
 		assert(dbn.scanDocument(0, 3)[183] == true); //back
 		assert(dbn.scanDocument(0, 3)[144] == false);
-		
 		
 	}
 
