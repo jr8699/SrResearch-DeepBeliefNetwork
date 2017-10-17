@@ -11,7 +11,7 @@ public class RBMTest {
 
 	@Test
 	public void testRBM() {
-		RBM rbm = new RBM(2,2,0.5f);
+		RBM rbm = new RBM(2,2,0.5f,false);
 		
 		//Input
 		boolean in[] = new boolean[2];
@@ -41,7 +41,7 @@ public class RBMTest {
 							,0.0f);
 		
 		//Make sure probability function works
-		assertEquals(0.2689,probability, 0.001);
+		assertEquals(0.731058,probability, 0.001);
 		
 		int oncnt = 0;
 		for(int i = 0;i < 10000; i++) {
@@ -53,7 +53,7 @@ public class RBMTest {
 		}
 		
 		//Test number of turn ons, should reflect the probability roughly
-		assertTrue(oncnt>2500 && oncnt < 2800);
+		assertTrue(oncnt>7000 && oncnt < 7750);
 		
 		//Test reconstruction now
 		w1 = rbm.getWeights()[0];
@@ -79,14 +79,14 @@ public class RBMTest {
 				oncnt++;
 		}
 		
-		assertTrue(oncnt>2500 && oncnt < 2800);
+		assertTrue(oncnt>7000 && oncnt < 7750);
 		
 		//Don't need to get Negative phase since pos/neg share the same function
 	}
 
 	@Test
 	public void weightUpdateTest() {
-		RBM rbm = new RBM(2,2,0.5f);
+		RBM rbm = new RBM(2,2,0.5f,false);
 		
 		//setup input
 		boolean in1[] = new boolean[2];
@@ -119,5 +119,36 @@ public class RBMTest {
 		assertEquals(0.75f,rbm.getWeights()[1].getWeight(), 0.001); //increase by 0.5
 		assertEquals(0.75f,rbm.getWeights()[2].getWeight(), 0.001); //should not change
 		assertEquals(0.44f,rbm.getWeights()[3].getWeight(), 0.001); //should not change
+	}
+	
+	@Test
+	public void testSoftmax() {
+		RBM rbm = new RBM(2,2,0.5f,true);
+		
+		//setup input
+		boolean in1[] = new boolean[2];
+		in1[0] = true;
+		in1[1] = false;
+		boolean in2[] = new boolean[2];
+		in2[0] = true;
+		in2[1] = true;
+		boolean in3[] = new boolean[2];
+		in3[0] = false;
+		in3[1] = false;
+		
+		//Mimic CD
+		rbm.setRow1(in1);
+		rbm.setRow2(in2);
+		rbm.setRow1(in3);
+		rbm.setRow2(in2);
+		
+		//set custom weights
+		rbm.getWeights()[0].setWeight(0.0f);
+		rbm.getWeights()[1].setWeight(0.25f);
+		rbm.getWeights()[2].setWeight(0.75f);
+		rbm.getWeights()[3].setWeight(0.44f);
+		
+		//do softmax
+		assertEquals(1,rbm.softmax());
 	}
 }

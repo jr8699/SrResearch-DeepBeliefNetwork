@@ -53,7 +53,6 @@ public class DBNInputLoader {
 		}else{
 			path = docDir + "\\" + cat + "\\" + i + ".txt";
 		}
-
 		
 		File f = new File(path);
 		List<String> doc = new ArrayList<String>();
@@ -80,6 +79,7 @@ public class DBNInputLoader {
 		
 			in.close();
 		}catch(Exception e) {
+			System.out.println("Bad Document index");
 			return null;
 		}
 		return doc;

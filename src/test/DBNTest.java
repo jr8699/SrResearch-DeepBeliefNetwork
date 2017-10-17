@@ -61,7 +61,7 @@ public class DBNTest {
 		values[2] = false;
 		
 		//Check that rows are correct when doing many rbms at the same time
-		dbn.preTrainingOneStep(1, values); //do three rbms w/ values
+		dbn.preTrainingOneStep(2, values); //do three rbms w/ values (index 2)
 		
 		assert(rbms[1].getRow1()[0] == rbms[0].getRow2()[0]);
 		assert(rbms[1].getRow1()[1] == rbms[0].getRow2()[1]);
@@ -116,12 +116,18 @@ public class DBNTest {
 		names[3] = "sport";
 		names[4] = "tech";
 		
-		DBN dbn = new DBN(3,arr,0.5f,"C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs,names);
+		DBN dbn = new DBN(3,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs,names);
 		
 		//Test scanning
 		assert(dbn.scanDocument(0, 3)[1] == true); //Yukos
 		assert(dbn.scanDocument(0, 3)[183] == true); //back
 		assert(dbn.scanDocument(0, 3)[144] == false);
+		
+		System.out.println("DBN PRETRAINING TEST");
+		dbn.fullPreTraining(350, 350);
+		System.out.println("DBN TRAINING TEST");
+		dbn.fullBackPropagation(350, 350);
+		dbn.fullTest(350, 350);
 		
 	}
 

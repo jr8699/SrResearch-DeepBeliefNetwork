@@ -35,6 +35,11 @@ public class RBM {
 	private boolean locked;
 	
 	/**
+	 * Mark the last RBM to use softmax
+	 */
+	private boolean lastRBM;
+	
+	/**
 	 * Constructor
 	 * @param row1Nodes
 	 * @param row2Nodes
@@ -42,15 +47,23 @@ public class RBM {
 	 * @param next
 	 * @param learningRate
 	 */
-	public RBM (int row1Nodes, int row2Nodes, float learningRate) {
+	public RBM (int row1Nodes, int row2Nodes, float learningRate, boolean last) {
+		this.lastRBM = last;
 		this.locked = false;
 		this.row1 = new Node[row1Nodes];
 		this.row2 = new Node[row2Nodes];
 		this.learningRate = learningRate;
 		this.bias = new float[row1Nodes+row2Nodes];
 		this.weights = new Weight[row1Nodes*row2Nodes];
+		initHiddenBias(0);
 		initRows();
 		initWeights();
+	}
+	
+	private void initHiddenBias(float init) {
+		for(int i = 0; i < row2.length; i++) {
+			bias[i+row1.length] = init;
+		}
 	}
 	
 	/**
@@ -108,7 +121,8 @@ public class RBM {
 	 * @return
 	 */
 	public float calcProbability(float sum, float b) {
-		float AE = sum + b; //Activation energy
+		float AE = b - sum; //Activation energy
+		//System.out.println("|BIAS: " + -b + " SUM: " + -sum + " |" );
 		return (float)(1/(1+Math.exp(AE))); //Sigmoid
 	}
 	
@@ -133,10 +147,10 @@ public class RBM {
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
 			if(rand<=probability) { //toggle the node
 				n.setState(true);
-				System.out.println("Node Activated with probability : " + probability);
+				//System.out.println("Node Activated with probability : " + probability);
 			}else {
 				n.setState(false);
-				System.out.println("Node Deactivated with probability : " + probability);
+				//System.out.println("Node Deactivated with probability : " + probability);
 			}
 		}else {
 			Node n = nodeWeights[0].getLeft(); //should be same left node for all
@@ -152,10 +166,10 @@ public class RBM {
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
 			if(rand<=probability) { //toggle the node
 				n.setState(true);
-				System.out.println("Node Activated with probability : " + probability);
+				//System.out.println("Node Activated with probability : " + probability);
 			}else {
 				n.setState(false);
-				System.out.println("Node Deactivated with probability : " + probability);
+				//System.out.println("Node Deactivated with probability : " + probability);
 			}
 		}
 	}
@@ -176,7 +190,7 @@ public class RBM {
 		
 		//update weights and biases to end training step
 		//Don't do if locked
-		if(!locked) updateWeightsAndBias();
+		updateWeightsAndBias();
 		
 		System.out.println("PreTraining step finished!");
 	}
@@ -201,13 +215,17 @@ public class RBM {
 		//Do C.D. for row2 (POS/NEG phase)
 		//An odd looking loop but it beats scanning the weights matrix thousands of times
 		System.out.println("Activation Phase:");
-		for(int i = 0; i < row2.length;i++) {
-			Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
-			int g = 0;
-			for(int j = 0;j < row1.length;j++) { //gather the weights
-				nodeWeights[g++] = weights[i+(j*row2.length)];
+		if(this.lastRBM == false) {
+			for(int i = 0; i < row2.length;i++) {
+				Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
+				int g = 0;
+				for(int j = 0;j < row1.length;j++) { //gather the weights
+					nodeWeights[g++] = weights[i+(j*row2.length)];
+				}
+				toggleNode(2,i,nodeWeights);
 			}
-			toggleNode(2,i,nodeWeights);
+		}else { //constrain the last row of DBN
+			softmax();
 		}
 	}
 	
@@ -232,6 +250,8 @@ public class RBM {
 			float neg = (this.row2[i].getState() ? 1 : 0) * 1;
 			bias[i+row1.length] -= learningRate*(pos-neg);
 		}
+		
+		System.out.println("Updated Weights");
 	}
 	
 	/**
@@ -292,4 +312,68 @@ public class RBM {
 		if(!locked) locked = true;
 		else locked = false;
 	}
+	
+	/**
+	 * Calculate probabilities of the last row to determine classification
+	 * @return
+	 */
+	public int softmax() {
+		System.out.println("SOFTMAX ACTIVATED");
+		float energies[] = new float[row2.length];
+		for(int i = 0; i < row2.length; i++) { //find all activation energies of the last row
+			Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
+			int g = 0;
+			for(int j = 0;j < row1.length;j++) { //gather the weights
+				nodeWeights[g++] = weights[i+(j*row2.length)];
+			}
+			
+			Node n = nodeWeights[0].getRight(); //should be same right node for all
+			float b;
+			b = bias[row1.length+n.getIndex()]; //grab bias
+			
+			//sum all w*x_j
+			float sum = 0;
+			for(int h = 0;h < nodeWeights.length;h++) {
+				sum += nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0);
+			}
+			energies[i] = (float) Math.exp(b - sum); //store activation energy
+		}
+		//Find top according to softmax
+		float max = 0;
+		int index = 0;
+		float sum = 0;
+		//sum energies
+		for(int i = 0; i < row2.length; i++) {
+			sum += energies[i];
+		}
+		System.out.println("SUM: " + sum);
+		for(int i = 0; i < row2.length; i++) {
+			System.out.println("ENERGIES: " + energies[i]);
+		}
+		//find highest
+		for(int i = 0; i < row2.length; i++) {
+			System.out.println(energies[i]/sum + " to activate node: " + i);
+			float tmpMax = energies[i]/sum;
+			if(tmpMax > max) {
+				index = i;
+				max = tmpMax;
+			}
+		}
+		
+		//activate appropriate nodes
+		for(int i = 0; i < row2.length; i++) {
+			if(i == index) {
+				row2[i].setState(true);
+			}else
+				row2[i].setState(false);
+		}
+		
+		return index;
+	}
+	
+	/**
+	 * Setter for last flag
+	 * @param l
+	 */
+	public void setLast(boolean l) { this.lastRBM = l; }
 }
