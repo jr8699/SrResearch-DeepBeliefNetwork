@@ -1,5 +1,9 @@
 package network;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Some Restricted Boltzmann Machine
  * @author Justin
@@ -121,7 +125,7 @@ public class RBM {
 	 * @return
 	 */
 	public float calcProbability(float sum, float b) {
-		float AE = b - sum; //Activation energy
+		float AE = -b - sum; //Activation energy
 		//System.out.println("|BIAS: " + -b + " SUM: " + -sum + " |" );
 		return (float)(1/(1+Math.exp(AE))); //Sigmoid
 	}
@@ -333,18 +337,28 @@ public class RBM {
 			
 			//sum all w*x_j
 			float sum = 0;
+			//System.out.println("ALL WEIGHTS:");
 			for(int h = 0;h < nodeWeights.length;h++) {
+				//System.out.println(nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0));
 				sum += nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0);
 			}
-			energies[i] = (float) Math.exp(b - sum); //store activation energy
+			energies[i] = (float) Math.exp(-b - sum); //store activation energy
 		}
 		//Find top according to softmax
+		
+		//Find max energy to get around underflow problem
+		float maxEnergy = 0.0f;
+		for(int i = 0; i < energies.length; i++) {
+			if(energies[i] > maxEnergy)
+				maxEnergy = energies[i];
+		}
+		
 		float max = 0;
 		int index = 0;
 		float sum = 0;
 		//sum energies
 		for(int i = 0; i < row2.length; i++) {
-			sum += energies[i];
+			sum += energies[i]-maxEnergy;
 		}
 		System.out.println("SUM: " + sum);
 		for(int i = 0; i < row2.length; i++) {
@@ -352,8 +366,8 @@ public class RBM {
 		}
 		//find highest
 		for(int i = 0; i < row2.length; i++) {
-			System.out.println(energies[i]/sum + " to activate node: " + i);
-			float tmpMax = energies[i]/sum;
+			System.out.println((energies[i]-maxEnergy)/sum + " to activate node: " + i);
+			float tmpMax = (energies[i]-maxEnergy)/sum;
 			if(tmpMax > max) {
 				index = i;
 				max = tmpMax;

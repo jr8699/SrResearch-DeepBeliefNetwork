@@ -116,7 +116,7 @@ public class DBNTest {
 		names[3] = "sport";
 		names[4] = "tech";
 		
-		DBN dbn = new DBN(3,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs,names);
+		DBN dbn = new DBN(3,arr,0.01f,"C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs,names);
 		
 		//Test scanning
 		assert(dbn.scanDocument(0, 3)[1] == true); //Yukos
@@ -125,8 +125,10 @@ public class DBNTest {
 		
 		System.out.println("DBN PRETRAINING TEST");
 		dbn.fullPreTraining(350, 350);
+
 		System.out.println("DBN TRAINING TEST");
 		dbn.fullBackPropagation(350, 350);
+
 		dbn.fullTest(350, 350);
 		
 	}
