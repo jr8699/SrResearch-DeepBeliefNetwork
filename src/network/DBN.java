@@ -120,30 +120,36 @@ public class DBN {
 		this.rbmArray[j].preTrainingStep();
 	}
 	
+	/**
+	 * Test a document with the network
+	 * @param input
+	 * @param expected
+	 * @return
+	 */
 	public boolean testOneStep(boolean input[], boolean expected[]) {
 		this.rbmArray[0].setRow1(input); //Set input
 		for(int i = 0; i < this.rbmArray.length; i++) { //Propagate input
 			this.rbmArray[i].activationPhase();
 		}
 		
-		int error = 0;
-		for(int i = 0;i < expected.length; i++) {
+		for(int i = 0;i < expected.length; i++) { //check expected vs. actual output
 			if(expected[i] != rbmArray[rbmArray.length-1].getRow2()[i].getState()) {
-				return false;
+				return false; //error, return false, not correct
 			}
 		}
 		
+		//expected == actual
 		return true;
 	}
 	
 	/**
-	 * Test the network 
+	 * Test the network with all test documents
 	 * @param totalInput
 	 * @param iterationLimit
 	 */
 	public void fullTest(int totalInput, int iterationLimit){
 		
-		//Hardcore expected values of each category
+		//Hardcode expected values of each category
 		boolean cat0[] = new boolean[5];
 		cat0[0] = true;
 		boolean cat1[] = new boolean[5];
@@ -155,6 +161,7 @@ public class DBN {
 		boolean cat4[] = new boolean[5];
 		cat4[4] = true;
 		
+		//Walk through all test documents
 		for(int i = 0;i < this.top50.length; i++) {
 			for(int j = 0; j < totalInput * 0.1; j++) {
 				switch(i) {
@@ -181,8 +188,7 @@ public class DBN {
 				}
 			}
 		}
-		
-
+		//Output the results at the end of experiments
 		System.out.println("Final Results: " + ((float)success/(float)totalInput*0.1*this.top50.length) * 100 + "%");
 	}
 	
@@ -198,7 +204,7 @@ public class DBN {
 		int docsPerCat = (training/this.top50.length);
 		int rbmTotal = rbmArray.length;
 		
-		//Hardcore expected values of each category
+		//Hardcode expected values of each category
 		boolean cat0[] = new boolean[5];
 		cat0[0] = true;
 		boolean cat1[] = new boolean[5];
@@ -255,6 +261,8 @@ public class DBN {
 			this.rbmArray[i].activationPhase();
 		}
 		
+		//Debug
+		//May remove
 		System.out.println("OUTPUT");
 		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[0].getState() + " | Expected: " + expected[0]);
 		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[1].getState() + " | Expected: " + expected[1]);
@@ -265,7 +273,7 @@ public class DBN {
 		//if no errors, dont backpropagate
 		int error = 0;
 		for(int i = 0;i < expected.length; i++) {
-			if(expected[i] != rbmArray[rbmArray.length-1].getRow2()[i].getState()) {
+			if(expected[i] != rbmArray[rbmArray.length-1].getRow2()[i].getState()) { //Check for error
 				error++;
 			}
 			rbmArray[rbmArray.length-1].getRow2()[i].setState(expected[i]); //set new state
@@ -282,7 +290,7 @@ public class DBN {
 			success++;
 		}
 		total++;
-		System.out.println("Percent success: " + ((float)success/(float)total) * 100 + "%");
+		//System.out.println("Percent success: " + ((float)success/(float)total) * 100 + "%");
 	}
 	
 	/**

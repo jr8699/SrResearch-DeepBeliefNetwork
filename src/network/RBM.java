@@ -64,6 +64,10 @@ public class RBM {
 		initWeights();
 	}
 	
+	/**
+	 * Initialize hidden bias nodes with 0.0
+	 * @param init
+	 */
 	private void initHiddenBias(float init) {
 		for(int i = 0; i < row2.length; i++) {
 			bias[i+row1.length] = init;
@@ -125,7 +129,7 @@ public class RBM {
 	 * @return
 	 */
 	public float calcProbability(float sum, float b) {
-		float AE = -b - sum; //Activation energy
+		float AE = b - sum; //Activation energy
 		//System.out.println("|BIAS: " + -b + " SUM: " + -sum + " |" );
 		return (float)(1/(1+Math.exp(AE))); //Sigmoid
 	}
@@ -267,11 +271,6 @@ public class RBM {
 								+ weights[i].getWeight() + "   "
 								+ weights[i].getRight().getState() + "-" + weights[i].getRight());
 		}
-		/**
-		for(int i = 0; i < row1.length; i++) {
-			System.out.println(row1[i].getState());
-		}
-		*/
 	}
 	
 	/**
@@ -342,7 +341,7 @@ public class RBM {
 				//System.out.println(nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0));
 				sum += nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0);
 			}
-			energies[i] = (float) Math.exp(-b - sum); //store activation energy
+			energies[i] = (float) Math.exp(b - sum); //store activation energy
 		}
 		//Find top according to softmax
 		
