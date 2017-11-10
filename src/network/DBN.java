@@ -25,9 +25,6 @@ public class DBN {
 	 */
 	private String top50[][];
 	
-	private int success;
-	private int total;
-	
 	/**
 	 * On construction:
 	 * Create all RBMs and tie them together (softmax at the end)
@@ -80,7 +77,8 @@ public class DBN {
 	 */
 	public void fullPreTraining(int totalInput, int iterationLimit) {
 		int training = (int)(totalInput*0.9); //number to train on
-		int docsPerCat = (training/this.top50.length);
+		float training2 = (float)(totalInput*0.9);
+		int docsPerCat = (int)Math.ceil((training2/this.top50.length));
 		int rbmTotal = rbmArray.length;
 		
 		//train all rbms on all input
@@ -113,10 +111,10 @@ public class DBN {
 		this.rbmArray[0].setRow1(values); //set beginning values
 		
 		while(j < rbm) { //propagate
-			System.out.println("Propagate to " + rbm);
+			//System.out.println("Propagate to " + rbm);
 			this.rbmArray[j++].activationPhase();
 		}
-		System.out.println("PreTrain RBM: " + j);
+		//System.out.println("PreTrain RBM: " + j);
 		this.rbmArray[j].preTrainingStep();
 	}
 	
@@ -161,6 +159,8 @@ public class DBN {
 		boolean cat4[] = new boolean[5];
 		cat4[4] = true;
 		
+		int success = 0;
+		
 		//Walk through all test documents
 		for(int i = 0;i < this.top50.length; i++) {
 			for(int j = 0; j < totalInput * 0.1; j++) {
@@ -198,10 +198,11 @@ public class DBN {
 	 * @param totalInput
 	 * @param iterationLimit
 	 */
-	public void fullBackPropagation(int totalInput, int iterationLimit){
-		System.out.println("START BACKPROPAGATION");
+	public boolean fullBackPropagation(int totalInput, int iterationLimit){
+		//System.out.println("START BACKPROPAGATION");
 		int training = (int)(totalInput*0.9); //number to train on
-		int docsPerCat = (training/this.top50.length);
+		float training2 = (float)(totalInput*0.9);
+		int docsPerCat = (int)Math.ceil((training2/this.top50.length));
 		int rbmTotal = rbmArray.length;
 		
 		//Hardcode expected values of each category
@@ -216,9 +217,10 @@ public class DBN {
 		boolean cat4[] = new boolean[5];
 		cat4[4] = true;
 		
+		int success = 0;
+		
 		//keep track of docs
 		boolean scanned[][] = new boolean[this.top50.length][docsPerCat];
-			
 		//Generate random cat and doc index
 		//True --> already used that document
 		int totalScanned = 0;
@@ -229,24 +231,41 @@ public class DBN {
 				scanned[cat][doc-1] = true;
 				switch(cat) {
 				case 0:
-					backpropOneStep(scanDocument(cat,doc),cat0);
+					if(!backpropOneStep(scanDocument(cat,doc),cat0))
+						success++;
 					break;
 				case 1:
-					backpropOneStep(scanDocument(cat,doc),cat1);
+					if(!backpropOneStep(scanDocument(cat,doc),cat1))
+						success++;
 					break;
 				case 2:
-					backpropOneStep(scanDocument(cat,doc),cat2);
+					if(!backpropOneStep(scanDocument(cat,doc),cat2))
+						success++;
 					break;
 				case 3:
-					backpropOneStep(scanDocument(cat,doc),cat3);
+					if(!backpropOneStep(scanDocument(cat,doc),cat3))
+						success++;
 					break;
 				case 4:
-					backpropOneStep(scanDocument(cat,doc),cat4);
+					if(!backpropOneStep(scanDocument(cat,doc),cat4))
+						success++;
 					break;
 				}
 				totalScanned++;
 			}
 		}
+		
+		System.out.println("TRAINING " + success + " " + totalScanned + " " + (float)success/(float)totalScanned * 100 + "%");
+		
+		//if (((((float)success/(float)totalScanned) * 100) < 19.5 && (((float)success/(float)totalScanned) * 100) > 20.5)) {
+		//	return true;
+		//}else
+		//	return false;
+		
+		if((float)success/(float)totalScanned != 0.8) {
+			return false;
+		}else
+			return true;
 		
 	}
 	
@@ -255,7 +274,7 @@ public class DBN {
 	 * @param input
 	 * @param expected
 	 */
-	public void backpropOneStep(boolean input[], boolean expected[]) {
+	public boolean backpropOneStep(boolean input[], boolean expected[]) {
 		this.rbmArray[0].setRow1(input); //Set input
 		for(int i = 0; i < this.rbmArray.length; i++) { //Propagate input
 			this.rbmArray[i].activationPhase();
@@ -263,12 +282,12 @@ public class DBN {
 		
 		//Debug
 		//May remove
-		System.out.println("OUTPUT");
-		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[0].getState() + " | Expected: " + expected[0]);
-		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[1].getState() + " | Expected: " + expected[1]);
-		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[2].getState() + " | Expected: " + expected[2]);
-		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[3].getState() + " | Expected: " + expected[3]);
-		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[4].getState() + " | Expected: " + expected[4]);
+		//System.out.println("OUTPUT");
+		//System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[0].getState() + " | Expected: " + expected[0]);
+		//System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[1].getState() + " | Expected: " + expected[1]);
+		//System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[2].getState() + " | Expected: " + expected[2]);
+		//System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[3].getState() + " | Expected: " + expected[3]);
+		//System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[4].getState() + " | Expected: " + expected[4]);
 		
 		//if no errors, dont backpropagate
 		int error = 0;
@@ -286,10 +305,11 @@ public class DBN {
 				this.rbmArray[i].reconstructionPhase(); //activate nodes on row1
 				this.rbmArray[i].updateWeightsAndBias(); //compare current/previous states and update the weights/bias
 			}
+			return false;
 		}else {
-			success++;
+			return true;
 		}
-		total++;
+		
 		//System.out.println("Percent success: " + ((float)success/(float)total) * 100 + "%");
 	}
 	

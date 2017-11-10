@@ -94,13 +94,17 @@ public class DBNTest {
 	
 	@Test
 	public void testBigDBN() {
-		int arr[][] = new int[3][2];
+		int arr[][] = new int[5][2];
 		arr[0][0] = 250;
 		arr[0][1] = 100;
 		arr[1][0] = 100;
 		arr[1][1] = 100;
 		arr[2][0] = 100;
-		arr[2][1] = 5; //softmax row
+		arr[2][1] = 100;
+		arr[3][0] = 100;
+		arr[3][1] = 100;
+		arr[4][0] = 100;
+		arr[4][1] = 5; //softmax row
 		
 		int docs[] = new int[5];
 		docs[0] = 100;
@@ -116,20 +120,68 @@ public class DBNTest {
 		names[3] = "sport";
 		names[4] = "tech";
 		
-		DBN dbn = new DBN(3,arr,0.01f,"C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs,names);
+		DBN dbn = new DBN(5,arr,0.01f,"C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs,names);
 		
 		//Test scanning
 		assert(dbn.scanDocument(0, 3)[1] == true); //Yukos
 		assert(dbn.scanDocument(0, 3)[183] == true); //back
 		assert(dbn.scanDocument(0, 3)[144] == false);
 		
+		/**
 		System.out.println("DBN PRETRAINING TEST");
-		dbn.fullPreTraining(350, 350);
+		dbn.fullPreTraining(75, 75);
 
 		System.out.println("DBN TRAINING TEST");
-		dbn.fullBackPropagation(350, 350);
+		dbn.fullBackPropagation(75, 75);
+		dbn.fullBackPropagation(75, 75);
+		dbn.fullBackPropagation(75, 75);
+		dbn.fullBackPropagation(75, 75);
+		dbn.fullBackPropagation(75, 75);
+		dbn.fullBackPropagation(75, 75);
+		dbn.fullBackPropagation(75, 75);
+		dbn.fullBackPropagation(75, 75);
 
-		dbn.fullTest(350, 350);
+		dbn.fullTest(75, 75);
+		*/
+		
+		/**
+		System.out.println("DBN PRETRAINING TEST");
+		dbn.fullPreTraining(150, 150);
+
+		System.out.println("DBN TRAINING TEST");
+		dbn.fullBackPropagation(150, 150);
+		dbn.fullBackPropagation(150, 150);
+		dbn.fullBackPropagation(150, 150);
+		dbn.fullBackPropagation(150, 150);
+		dbn.fullBackPropagation(150, 150);
+		dbn.fullBackPropagation(150, 150);
+		dbn.fullBackPropagation(150, 150);
+		dbn.fullBackPropagation(150, 150);
+
+		dbn.fullTest(150, 150);
+		*/
+		
+		///**
+		System.out.println("DBN PRETRAINING TEST");
+		dbn.fullPreTraining(300, 300);
+
+		System.out.println("DBN TRAINING TEST");
+		while (dbn.fullBackPropagation(300, 300) == false);
+		System.out.println("DONE BACKPROP");
+		
+		/*
+		dbn.fullBackPropagation(300, 300);
+		dbn.fullBackPropagation(300, 300);
+		dbn.fullBackPropagation(300, 300);
+		dbn.fullBackPropagation(300, 300);
+		dbn.fullBackPropagation(300, 300);
+		dbn.fullBackPropagation(300, 300);
+		dbn.fullBackPropagation(300, 300);
+		dbn.fullBackPropagation(300, 300);
+		*/
+
+		dbn.fullTest(300, 300);
+		//*/
 		
 	}
 

@@ -200,12 +200,12 @@ public class RBM {
 		//Don't do if locked
 		updateWeightsAndBias();
 		
-		System.out.println("PreTraining step finished!");
+		//System.out.println("PreTraining step finished!");
 	}
 	
 	public void reconstructionPhase() {
 		//Do C.D. the other way (Reconstruction)
-		System.out.println("Reconstruction:");
+		//System.out.println("Reconstruction:");
 		for(int i = 0; i < row1.length;i++) {
 			Weight nodeWeights[] = new Weight[row2.length]; //store all weight values for a node
 			int g = 0;
@@ -222,7 +222,7 @@ public class RBM {
 	public void activationPhase() {
 		//Do C.D. for row2 (POS/NEG phase)
 		//An odd looking loop but it beats scanning the weights matrix thousands of times
-		System.out.println("Activation Phase:");
+		//System.out.println("Activation Phase:");
 		if(this.lastRBM == false) {
 			for(int i = 0; i < row2.length;i++) {
 				Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
@@ -259,7 +259,7 @@ public class RBM {
 			bias[i+row1.length] -= learningRate*(pos-neg);
 		}
 		
-		System.out.println("Updated Weights");
+		//System.out.println("Updated Weights");
 	}
 	
 	/**
@@ -321,7 +321,7 @@ public class RBM {
 	 * @return
 	 */
 	public int softmax() {
-		System.out.println("SOFTMAX ACTIVATED");
+		//System.out.println("SOFTMAX ACTIVATED");
 		float energies[] = new float[row2.length];
 		for(int i = 0; i < row2.length; i++) { //find all activation energies of the last row
 			Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
@@ -359,13 +359,13 @@ public class RBM {
 		for(int i = 0; i < row2.length; i++) {
 			sum += energies[i]-maxEnergy;
 		}
-		System.out.println("SUM: " + sum);
+		//System.out.println("SUM: " + sum);
 		for(int i = 0; i < row2.length; i++) {
-			System.out.println("ENERGIES: " + energies[i]);
+			//System.out.println("ENERGIES: " + energies[i]);
 		}
 		//find highest
 		for(int i = 0; i < row2.length; i++) {
-			System.out.println((energies[i]-maxEnergy)/sum + " to activate node: " + i);
+			//System.out.println((energies[i]-maxEnergy)/sum + " to activate node: " + i);
 			float tmpMax = (energies[i]-maxEnergy)/sum;
 			if(tmpMax > max) {
 				index = i;
