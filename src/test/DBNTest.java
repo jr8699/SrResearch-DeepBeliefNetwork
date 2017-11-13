@@ -96,14 +96,14 @@ public class DBNTest {
 	public void testBigDBN() {
 		int arr[][] = new int[5][2];
 		arr[0][0] = 250;
-		arr[0][1] = 100;
-		arr[1][0] = 100;
-		arr[1][1] = 100;
-		arr[2][0] = 100;
-		arr[2][1] = 100;
-		arr[3][0] = 100;
-		arr[3][1] = 100;
-		arr[4][0] = 100;
+		arr[0][1] = 50;
+		arr[1][0] = 50;
+		arr[1][1] = 50;
+		arr[2][0] = 50;
+		arr[2][1] = 50;
+		arr[3][0] = 50;
+		arr[3][1] = 50;
+		arr[4][0] = 50;
 		arr[4][1] = 5; //softmax row
 		
 		int docs[] = new int[5];
@@ -163,10 +163,11 @@ public class DBNTest {
 		
 		///**
 		System.out.println("DBN PRETRAINING TEST");
-		dbn.fullPreTraining(300, 300);
+		dbn.fullPreTraining(1750);
 
 		System.out.println("DBN TRAINING TEST");
-		while (dbn.fullBackPropagation(300, 300) == false);
+		dbn.fullBackPropagation(1750);
+
 		System.out.println("DONE BACKPROP");
 		
 		/*
@@ -180,7 +181,7 @@ public class DBNTest {
 		dbn.fullBackPropagation(300, 300);
 		*/
 
-		dbn.fullTest(300, 300);
+		dbn.fullTest(350);
 		//*/
 		
 	}

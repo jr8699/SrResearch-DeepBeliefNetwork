@@ -234,6 +234,7 @@ public class RBM {
 			}
 		}else { //constrain the last row of DBN
 			softmax();
+			//noSoftmax();
 		}
 	}
 	
@@ -370,6 +371,55 @@ public class RBM {
 			if(tmpMax > max) {
 				index = i;
 				max = tmpMax;
+			}
+		}
+		
+		//activate appropriate nodes
+		for(int i = 0; i < row2.length; i++) {
+			if(i == index) {
+				row2[i].setState(true);
+			}else
+				row2[i].setState(false);
+		}
+		
+		return index;
+	}
+	
+	/**
+	 * Alternative to softmax, just sigmoid functions at the end
+	 * @return
+	 */
+	
+	public int noSoftmax() {
+		float energies[] = new float[row2.length];
+		for(int i = 0; i < row2.length; i++) { //find all activation energies of the last row
+			Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
+			int g = 0;
+			for(int j = 0;j < row1.length;j++) { //gather the weights
+				nodeWeights[g++] = weights[i+(j*row2.length)];
+			}
+			
+			Node n = nodeWeights[0].getRight(); //should be same right node for all
+			float b;
+			b = bias[row1.length+n.getIndex()]; //grab bias
+			
+			//sum all w*x_j
+			float sum = 0;
+			//System.out.println("ALL WEIGHTS:");
+			for(int h = 0;h < nodeWeights.length;h++) {
+				//System.out.println(nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0));
+				sum += nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0);
+			}
+			energies[i] = (float) Math.exp(b - sum); //store activation energy
+		}
+		
+		//Find max energy to get around underflow problem
+		float maxProb = 0.0f;
+		int index = -1;
+		for(int i = 0; i < energies.length; i++) {
+			if((float)(1/(1+Math.exp(energies[i]))) > maxProb) {
+				maxProb = (float)(1/(1+Math.exp(energies[i])));
+				index=i;
 			}
 		}
 		

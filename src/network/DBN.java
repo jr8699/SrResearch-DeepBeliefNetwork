@@ -75,13 +75,18 @@ public class DBN {
 	 * Need to consult on how to do this (Random documents, each category at once, etc.)
 	 * @param totalInput
 	 */
-	public void fullPreTraining(int totalInput, int iterationLimit) {
+	public void fullPreTraining(int totalInput) {
 		int training = (int)(totalInput*0.9); //number to train on
 		float training2 = (float)(totalInput*0.9);
 		int docsPerCat = (int)Math.ceil((training2/this.top50.length));
 		int rbmTotal = rbmArray.length;
 		
+		//
+		//training=540;
+		//
+		
 		//train all rbms on all input
+		//-1, do not train last layer, that is for labelled classification
 		for(int i = 0; i < rbmTotal-1; i++) {
 			//keep track of docs
 			boolean scanned[][] = new boolean[this.top50.length][docsPerCat];
@@ -89,10 +94,13 @@ public class DBN {
 			//Generate random cat and doc index
 			//True --> already used that document
 			int totalScanned = 0;
-			while(totalScanned < training && totalScanned < iterationLimit) {
+			while(totalScanned < training) {
 				int cat = (int) (Math.floor(Math.random()*top50.length));
+				//int cat = (int) (Math.floor(Math.random()*2));
+				//int cat = 0;
 				int doc = ((int) (Math.floor(Math.random()*docsPerCat)) + 1);
 				if(scanned[cat][doc-1] == false) {
+					//System.out.println("CAT" + cat + " DOC " + doc);
 					scanned[cat][doc-1] = true;
 					preTrainingOneStep(i,scanDocument(cat,doc));
 					totalScanned++;
@@ -136,7 +144,6 @@ public class DBN {
 			}
 		}
 		
-		//expected == actual
 		return true;
 	}
 	
@@ -145,7 +152,7 @@ public class DBN {
 	 * @param totalInput
 	 * @param iterationLimit
 	 */
-	public void fullTest(int totalInput, int iterationLimit){
+	public void fullTest(int totalInput){
 		
 		//Hardcode expected values of each category
 		boolean cat0[] = new boolean[5];
@@ -161,35 +168,64 @@ public class DBN {
 		
 		int success = 0;
 		
+		int right[]=new int[5];
+		int tot[]=new int[5];
+		
 		//Walk through all test documents
-		for(int i = 0;i < this.top50.length; i++) {
+		//for(int i = 0;i < this.top50.length; i++) {
+		for(int i = 0;i < 5; i++) {
 			for(int j = 0; j < totalInput * 0.1; j++) {
 				switch(i) {
 				case 0:
-					if(testOneStep(scanDocument(i,totalInput-j),cat0))
+					if(testOneStep(scanDocument(i,totalInput-j),cat0)) {
+						right[0]++;
 						success++;
+					}
+					tot[0]++;
 					break;
 				case 1:
-					if(testOneStep(scanDocument(i,totalInput-j),cat1))
+					if(testOneStep(scanDocument(i,totalInput-j),cat1)) {
 						success++;
+						right[1]++;
+					}
+					tot[1]++;
 					break;
 				case 2:
-					if(testOneStep(scanDocument(i,totalInput-j),cat2))
+					if(testOneStep(scanDocument(i,totalInput-j),cat2)) {
 						success++;
+						right[2]++;
+					}
+					tot[2]++;
 					break;
 				case 3:
-					if(testOneStep(scanDocument(i,totalInput-j),cat3))
+					if(testOneStep(scanDocument(i,totalInput-j),cat3)) {
 						success++;
+						right[3]++;
+					}
+					tot[3]++;
 					break;
 				case 4:
-					if(testOneStep(scanDocument(i,totalInput-j),cat4))
+					if(testOneStep(scanDocument(i,totalInput-j),cat4)) {
 						success++;
+						right[4]++;
+					}
+					tot[4]++;
 					break;
 				}
 			}
 		}
 		//Output the results at the end of experiments
-		System.out.println("Final Results: " + ((float)success/(float)totalInput*0.1*this.top50.length) * 100 + "%");
+		System.out.println("Final Results: " + ((float)success/((float)totalInput*0.1*5))*100 + "% " + success + " " + totalInput*0.1*5);
+		System.out.println("Right:");
+		for(int i : right) {
+			System.out.println(i);
+		}
+		System.out.println("TOT:");
+		for(int i : tot) {
+			System.out.println(i);
+		}
+		
+		
 	}
 	
 	/**
@@ -198,7 +234,7 @@ public class DBN {
 	 * @param totalInput
 	 * @param iterationLimit
 	 */
-	public boolean fullBackPropagation(int totalInput, int iterationLimit){
+	public boolean fullBackPropagation(int totalInput){
 		//System.out.println("START BACKPROPAGATION");
 		int training = (int)(totalInput*0.9); //number to train on
 		float training2 = (float)(totalInput*0.9);
@@ -219,36 +255,62 @@ public class DBN {
 		
 		int success = 0;
 		
+		//
+		//training=540;
+		//
+		
+		int right[]=new int[5];
+		int tot[]= new int[5];
+		
 		//keep track of docs
 		boolean scanned[][] = new boolean[this.top50.length][docsPerCat];
 		//Generate random cat and doc index
 		//True --> already used that document
 		int totalScanned = 0;
-		while(totalScanned < training && totalScanned < iterationLimit) {
+		while(totalScanned < training) {
 			int cat = (int) (Math.floor(Math.random()*top50.length));
+			//int cat = (int) (Math.floor(Math.random()*2));
+			//int cat = 0;
 			int doc = ((int) (Math.floor(Math.random()*docsPerCat)) + 1);
+			
+			System.out.println("CAT: " + cat + " DOC: " + doc);
 			if(scanned[cat][doc-1] == false) {
 				scanned[cat][doc-1] = true;
 				switch(cat) {
 				case 0:
-					if(!backpropOneStep(scanDocument(cat,doc),cat0))
+					if(backpropOneStep(scanDocument(cat,doc),cat0)) {
 						success++;
+						right[0]++;
+					}
+					tot[0]++;
 					break;
 				case 1:
-					if(!backpropOneStep(scanDocument(cat,doc),cat1))
+					if(backpropOneStep(scanDocument(cat,doc),cat1)) {
 						success++;
+						right[1]++;
+					}
+					tot[1]++;
 					break;
 				case 2:
-					if(!backpropOneStep(scanDocument(cat,doc),cat2))
+					if(backpropOneStep(scanDocument(cat,doc),cat2)) {
 						success++;
+						right[2]++;
+					}
+					tot[2]++;
 					break;
 				case 3:
-					if(!backpropOneStep(scanDocument(cat,doc),cat3))
+					if(backpropOneStep(scanDocument(cat,doc),cat3)) {
 						success++;
+						right[3]++;
+					}
+					tot[3]++;
 					break;
 				case 4:
-					if(!backpropOneStep(scanDocument(cat,doc),cat4))
+					if(backpropOneStep(scanDocument(cat,doc),cat4)) {
 						success++;
+						right[4]++;
+					}
+					tot[4]++;
 					break;
 				}
 				totalScanned++;
@@ -256,6 +318,14 @@ public class DBN {
 		}
 		
 		System.out.println("TRAINING " + success + " " + totalScanned + " " + (float)success/(float)totalScanned * 100 + "%");
+		System.out.println("Right:");
+		for(int i : right) {
+			System.out.println(i);
+		}
+		System.out.println("TOTAL:");
+		for(int i : tot) {
+			System.out.println(i);
+		}
 		
 		//if (((((float)success/(float)totalScanned) * 100) < 19.5 && (((float)success/(float)totalScanned) * 100) > 20.5)) {
 		//	return true;
@@ -310,7 +380,6 @@ public class DBN {
 			return true;
 		}
 		
-		//System.out.println("Percent success: " + ((float)success/(float)total) * 100 + "%");
 	}
 	
 	/**
