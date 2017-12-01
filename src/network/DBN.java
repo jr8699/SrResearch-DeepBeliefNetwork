@@ -68,7 +68,8 @@ public class DBN {
 		this.rbmArray[rbmArray.length-1].setLast(true);
 		
 		//Load top50 words
-		loadTop50();
+		//loadTop50();
+		this.top50 = this.loader.loadTop2();
 		//this.top50 = new String[5][50];
 	}
 	
@@ -254,16 +255,11 @@ public class DBN {
 		int rbmTotal = rbmArray.length;
 		
 		//Hardcode expected values of each category
-		boolean cat0[] = new boolean[5];
+		boolean cat0[] = new boolean[2];
 		cat0[0] = true;
-		boolean cat1[] = new boolean[5];
+		boolean cat1[] = new boolean[2];
 		cat1[1] = true;
-		boolean cat2[] = new boolean[5];
-		cat2[2] = true;
-		boolean cat3[] = new boolean[5];
-		cat3[3] = true;
-		boolean cat4[] = new boolean[5];
-		cat4[4] = true;
+
 		
 		
 		int success = 0;
@@ -274,7 +270,7 @@ public class DBN {
 		
 		int right[]=new int[5];
 		int tot[]= new int[5];
-		
+		/*
 		//keep track of docs
 		boolean scanned[][] = new boolean[this.top50.length][docsPerCat];
 		//Generate random cat and doc index
@@ -328,6 +324,40 @@ public class DBN {
 				totalScanned++;
 			}
 		}
+		*/
+		
+		//keep track of docs
+		boolean scanned[][] = new boolean[this.top50.length][docsPerCat];
+		//Generate random cat and doc index
+		//True --> already used that document
+		int totalScanned = 0;
+		while(totalScanned < training) {
+			//int cat = (int) (Math.floor(Math.random()*top50.length));
+			int cat = (int) (Math.floor(Math.random()*2));
+			//int cat = 0;
+			int doc = ((int) (Math.floor(Math.random()*docsPerCat)) + 1);
+			//System.out.println("CAT: " + cat + " DOC: " + doc);
+			if(scanned[cat][doc-1] == false) {
+				scanned[cat][doc-1] = true;
+				switch(cat) {
+				case 0:
+					if(backpropOneStep(scanDocument(cat,doc),cat0)) {
+						success++;
+						right[0]++;
+					}
+					tot[0]++;
+					break;
+				case 1:
+					if(backpropOneStep(scanDocument(cat,doc),cat1)) {
+						success++;
+						right[1]++;
+					}
+					tot[1]++;
+					break;
+			}
+				totalScanned++;
+			}
+		}
 		
 		System.out.println("TRAINING " + success + " " + totalScanned + " " + (float)success/(float)totalScanned * 100 + "%");
 		//System.out.println("Right:");
@@ -375,6 +405,7 @@ public class DBN {
 		
 		//if no errors, dont backpropagate
 		int error = 0;
+		System.out.println(expected.length);
 		for(int i = 0;i < expected.length; i++) {
 			if(expected[i] != rbmArray[rbmArray.length-1].getRow2()[i].getState()) { //Check for error
 				error++;
@@ -407,13 +438,13 @@ public class DBN {
 	 */
 	public boolean[] scanDocument(int cat, int doc) {
 		List<String> document = loader.getDocument(cat,doc);
-		boolean values[] = new boolean [top50.length*50]; //hard coded for simplicity, extremely unlikely to change
+		boolean values[] = new boolean [top50.length*top50[cat].length]; //hard coded for simplicity, extremely unlikely to change
 		//1d array for simplicity
 		for(int i = 0; i < top50.length; i++) {
 			for(int j = 0; j < top50[i].length; j++) {
 				for(int g = 0; g < document.size();g++) {
 					if(top50[i][j].equals(document.get(g))) {
-						values[j + (i * 50)] = true;
+						values[j + (i * top50[cat].length)] = true;
 						break; //Stop looking for that word
 					}
 				}

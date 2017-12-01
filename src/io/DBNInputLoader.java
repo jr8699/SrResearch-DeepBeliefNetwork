@@ -127,4 +127,29 @@ public class DBNInputLoader {
 		}
 		return top50;
 	}
+	
+	public String[][] loadTop2(){
+		String top2[][] = new String[numCat][1];
+		
+		for(int j = 0; j < this.numCat; j++) {
+			File f = new File(top50Dir + "\\" + j + "\\top50.txt"); //append filepath
+			try { //read
+				InputStream in = new FileInputStream(f);
+				Reader r = new InputStreamReader(in, Charset.forName("ASCII"));
+				BufferedReader buffR = new BufferedReader(r);
+				String line;
+				int i = 0;
+			
+				while((line = buffR.readLine()) != null) {
+					//store
+					top2[j][i++] = line;
+				}
+			
+				in.close();
+			}catch(Exception e) {
+				return null;
+			}
+		}
+		return top2;
+	}
 }

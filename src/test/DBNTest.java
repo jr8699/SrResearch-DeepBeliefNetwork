@@ -93,6 +93,47 @@ public class DBNTest {
 	}
 	
 	@Test
+	public void testSmallDBN() {
+		int arr[][] = new int [2][2];
+		arr[0][0] = 2;
+		arr[0][1] = 3;
+		arr[1][0] = 3;
+		arr[1][1] = 2; //softmax row
+		
+		//not used
+		int docs[] = new int[5];
+		docs[0] = 100;
+		docs[1] = 100;
+		docs[2] = 100;
+		docs[3] = 100;
+		docs[4] = 100;
+	
+		String names[] = new String[5];
+		names[0] = "business";
+		names[1] = "entertainment";
+		names[2] = "politics";
+		names[3] = "sport";
+		names[4] = "tech";
+		//
+		
+		DBN dbn = new DBN(2,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\small\\top50","C:\\Users\\Justin\\Documents\\bbc\\small",2,docs,names);
+		
+		//experiments
+		System.out.println("DBN PRETRAINING TEST");
+		dbn.fullPreTraining(4);
+
+		System.out.println("DBN TRAINING TEST");
+		for(int j = 0; j < 10000; j++)
+			dbn.fullBackPropagation(4);
+
+
+
+		System.out.println("DONE BACKPROP");
+
+		dbn.fullTest(2);
+	}
+	
+	@Test
 	public void testBigDBN() {
 		float results[] = new float[30];
 		for(int i =0; i < 30; i++) {
