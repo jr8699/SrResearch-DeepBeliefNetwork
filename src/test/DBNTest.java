@@ -94,6 +94,62 @@ public class DBNTest {
 	
 	@Test
 	public void testBigDBN() {
+		float results[] = new float[30];
+		for(int i =0; i < 30; i++) {
+			int arr[][] = new int[5][2];
+			arr[0][0] = 250;
+			arr[0][1] = 100;
+			arr[1][0] = 100;
+			arr[1][1] = 100;
+			arr[2][0] = 100;
+			arr[2][1] = 5; //softmax row
+		
+			//not used
+			int docs[] = new int[5];
+			docs[0] = 100;
+			docs[1] = 100;
+			docs[2] = 100;
+			docs[3] = 100;
+			docs[4] = 100;
+		
+			String names[] = new String[5];
+			names[0] = "business";
+			names[1] = "entertainment";
+			names[2] = "politics";
+			names[3] = "sport";
+			names[4] = "tech";
+		
+			//DBN dbn = new DBN(3,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\test\\top50","C:\\Users\\Justin\\Documents\\bbc\\test",5,docs,names);
+			DBN dbn = new DBN(3,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs,names);
+			//Test scanning
+			//assert(dbn.scanDocument(0, 3)[1] == true); //Yukos
+			//assert(dbn.scanDocument(0, 3)[183] == true); //back
+			//assert(dbn.scanDocument(0, 3)[144] == false);
+
+			
+			//experiments
+			System.out.println("DBN PRETRAINING TEST");
+			dbn.fullPreTraining(1500);
+
+			System.out.println("DBN TRAINING TEST");
+			dbn.fullBackPropagation(1500);
+
+
+
+			System.out.println("DONE BACKPROP");
+
+			results[i] = dbn.fullTest(300);
+		}
+		System.out.println("RESULTS");
+		for(float f : results) {
+			System.out.println(f);
+		}
+		
+	}
+	
+	@Test
+	public void whyMyExperimentsFailed() {
+		
 		int arr[][] = new int[5][2];
 		arr[0][0] = 250;
 		arr[0][1] = 50;
@@ -120,70 +176,84 @@ public class DBNTest {
 		names[3] = "sport";
 		names[4] = "tech";
 		
+		
+		//DBN dbn = new DBN(5,arr,0.01f,"C:\\Users\\Justin\\Documents\\bbc\\test\\top50","C:\\Users\\Justin\\Documents\\bbc\\test",5,docs,names);
 		DBN dbn = new DBN(5,arr,0.01f,"C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs,names);
 		
-		//Test scanning
-		assert(dbn.scanDocument(0, 3)[1] == true); //Yukos
-		assert(dbn.scanDocument(0, 3)[183] == true); //back
-		assert(dbn.scanDocument(0, 3)[144] == false);
+		//Statistics
 		
-		/**
-		System.out.println("DBN PRETRAINING TEST");
-		dbn.fullPreTraining(75, 75);
+		int sum[] = new int[5];
+		int docVal[][][] = new int[5][300][5];
+		int docVal2[][] = new int[5][300];
+		for(int i = 0; i < 5; i++) {
+			for(int j = 1; j < 10; j++) {
+				boolean[] values = dbn.scanDocument(i, j);
+					
+				for(int g = 0; g < values.length; g++) {
+					if(values[g]) {
+						docVal2[i][j]++;
+					if(g < 50) {
+						docVal[i][j][0]++;
 
-		System.out.println("DBN TRAINING TEST");
-		dbn.fullBackPropagation(75, 75);
-		dbn.fullBackPropagation(75, 75);
-		dbn.fullBackPropagation(75, 75);
-		dbn.fullBackPropagation(75, 75);
-		dbn.fullBackPropagation(75, 75);
-		dbn.fullBackPropagation(75, 75);
-		dbn.fullBackPropagation(75, 75);
-		dbn.fullBackPropagation(75, 75);
+					}
+					if(g >= 50 && g < 100) {
+						docVal[i][j][1]++;
 
-		dbn.fullTest(75, 75);
-		*/
+					}
+					if(g >= 100 && g < 150) {
+						docVal[i][j][2]++;
+
+					}
+					if(g >= 150 && g < 200) {
+						docVal[i][j][3]++;
+
+					}
+					if(g >= 200 && g < 250) {
+						docVal[i][j][4]++;
+
+					}
+					}
+				}
+			}
+		}
 		
-		/**
-		System.out.println("DBN PRETRAINING TEST");
-		dbn.fullPreTraining(150, 150);
-
-		System.out.println("DBN TRAINING TEST");
-		dbn.fullBackPropagation(150, 150);
-		dbn.fullBackPropagation(150, 150);
-		dbn.fullBackPropagation(150, 150);
-		dbn.fullBackPropagation(150, 150);
-		dbn.fullBackPropagation(150, 150);
-		dbn.fullBackPropagation(150, 150);
-		dbn.fullBackPropagation(150, 150);
-		dbn.fullBackPropagation(150, 150);
-
-		dbn.fullTest(150, 150);
-		*/
-		
-		///**
-		System.out.println("DBN PRETRAINING TEST");
-		dbn.fullPreTraining(1750);
-
-		System.out.println("DBN TRAINING TEST");
-		dbn.fullBackPropagation(1750);
-
-		System.out.println("DONE BACKPROP");
-		
+		assert(true);
 		/*
-		dbn.fullBackPropagation(300, 300);
-		dbn.fullBackPropagation(300, 300);
-		dbn.fullBackPropagation(300, 300);
-		dbn.fullBackPropagation(300, 300);
-		dbn.fullBackPropagation(300, 300);
-		dbn.fullBackPropagation(300, 300);
-		dbn.fullBackPropagation(300, 300);
-		dbn.fullBackPropagation(300, 300);
+		for(int i = 0; i < 5; i++) {
+			//System.out.println("DOCUMENT " + i);
+			for(int j = 0; j < 300; j++) {
+				System.out.println(docVal2[i][j]);
+			}
+		}
 		*/
-
-		dbn.fullTest(350);
-		//*/
+		double docAvg[][] = new double[5][5];
 		
+		for(int i = 0; i < 5; i++) {
+			System.out.println("Category " + i);
+			for(int j = 1; j < 10; j++) {
+				docAvg[i][0] += docVal[i][j][0];
+				docAvg[i][1] += docVal[i][j][1];
+				docAvg[i][2] += docVal[i][j][2];
+				docAvg[i][3] += docVal[i][j][3];
+				docAvg[i][4] += docVal[i][j][4];
+				System.out.println("WORDS IN CAT 0: " + j + " " + docVal[i][j][0]);
+				System.out.println("WORDS IN CAT 1: " + j + " "+ docVal[i][j][1]);
+				System.out.println("WORDS IN CAT 2: " + j + " "+ docVal[i][j][2]);
+				System.out.println("WORDS IN CAT 3: " + j + " "+ docVal[i][j][3]);
+				System.out.println("WORDS IN CAT 4: " + j + " "+ docVal[i][j][4]);
+			}
+		}
+		
+		for(int i = 0; i < 5; i++) {
+			for(int j = 0; j < 5; j++) {
+				int sums[] = new int[5];
+				for(int h = 0; h < 5; h++) {
+					sums[i] += docAvg[i][h];
+				}
+				
+				System.out.println("CAT: " + i + " CAT: " + j + " AVG: " + docAvg[i][j]/10);
+			}
+		}
 	}
 
 }

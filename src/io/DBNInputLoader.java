@@ -56,6 +56,7 @@ public class DBNInputLoader {
 		
 		File f = new File(path);
 		List<String> doc = new ArrayList<String>();
+		//System.out.println(path);
 		
 		try { //read
 			InputStream in = new FileInputStream(f);

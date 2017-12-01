@@ -109,6 +109,8 @@ public class RBM {
 	public void setRow1(boolean values[]) {
 		for(int i = 0;i < row1.length;i++) {
 			if(values[i]) row1[i].setState(true);
+			else
+				row1[i].setState(false);
 		}
 	}
 	
@@ -119,6 +121,8 @@ public class RBM {
 	public void setRow2(boolean values[]) {
 		for(int i = 0;i < row2.length;i++) {
 			if(values[i]) row2[i].setState(true);
+			else
+				row2[i].setState(false);
 		}
 	}
 	
@@ -129,7 +133,7 @@ public class RBM {
 	 * @return
 	 */
 	public float calcProbability(float sum, float b) {
-		float AE = b - sum; //Activation energy
+		float AE = - b - sum; //Activation energy
 		//System.out.println("|BIAS: " + -b + " SUM: " + -sum + " |" );
 		return (float)(1/(1+Math.exp(AE))); //Sigmoid
 	}
@@ -153,12 +157,12 @@ public class RBM {
 			}
 			float probability = calcProbability(sum,b);
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
-			if(rand<=probability) { //toggle the node
+			if(rand>=probability) { //toggle the node
 				n.setState(true);
-				//System.out.println("Node Activated with probability : " + probability);
+				//System.out.println("Node Activated with probability : " + probability + n);
 			}else {
 				n.setState(false);
-				//System.out.println("Node Deactivated with probability : " + probability);
+				//System.out.println("Node Deactivated with probability : " + probability + n);
 			}
 		}else {
 			Node n = nodeWeights[0].getLeft(); //should be same left node for all
@@ -172,7 +176,7 @@ public class RBM {
 			}
 			float probability = calcProbability(sum,b);
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
-			if(rand<=probability) { //toggle the node
+			if(rand>=probability) { //toggle the node
 				n.setState(true);
 				//System.out.println("Node Activated with probability : " + probability);
 			}else {
@@ -245,7 +249,8 @@ public class RBM {
 			float neg = (w.getRight().getState() ? 1 : 0) * (w.getLeft().getState() ? 1 : 0);
 			w.setWeight(w.getWeight()-(learningRate*(pos-neg)));
 		}
-				
+		
+		
 		//Update bias (row1)
 		for(int i = 0;i < row1.length;i++) {
 			float pos = (this.row1[i].getPrevState() ? 1 : 0) * 1;

@@ -24,6 +24,7 @@ public class DBN {
 	 * Top 50 words for each category
 	 */
 	private String top50[][];
+
 	
 	/**
 	 * On construction:
@@ -68,6 +69,7 @@ public class DBN {
 		
 		//Load top50 words
 		loadTop50();
+		//this.top50 = new String[5][50];
 	}
 	
 	/**
@@ -82,7 +84,7 @@ public class DBN {
 		int rbmTotal = rbmArray.length;
 		
 		//
-		//training=540;
+		//training=270;
 		//
 		
 		//train all rbms on all input
@@ -152,7 +154,7 @@ public class DBN {
 	 * @param totalInput
 	 * @param iterationLimit
 	 */
-	public void fullTest(int totalInput){
+	public float fullTest(int totalInput){
 		
 		//Hardcode expected values of each category
 		boolean cat0[] = new boolean[5];
@@ -174,12 +176,14 @@ public class DBN {
 		//Walk through all test documents
 		//for(int i = 0;i < this.top50.length; i++) {
 		for(int i = 0;i < 5; i++) {
-			for(int j = 0; j < totalInput * 0.1; j++) {
+			for(int j = 0; j < (int)(totalInput * 0.1); j++) {
+				//System.out.println(totalInput +  " " + ((int)(totalInput * 0.1)-j));
 				switch(i) {
 				case 0:
 					if(testOneStep(scanDocument(i,totalInput-j),cat0)) {
 						right[0]++;
 						success++;
+						//System.out.println("SUCCESS: CAT: " + i);
 					}
 					tot[0]++;
 					break;
@@ -187,6 +191,7 @@ public class DBN {
 					if(testOneStep(scanDocument(i,totalInput-j),cat1)) {
 						success++;
 						right[1]++;
+						//System.out.println("SUCCESS: CAT: " + i);
 					}
 					tot[1]++;
 					break;
@@ -194,6 +199,7 @@ public class DBN {
 					if(testOneStep(scanDocument(i,totalInput-j),cat2)) {
 						success++;
 						right[2]++;
+						//System.out.println("SUCCESS: CAT: " + i);
 					}
 					tot[2]++;
 					break;
@@ -201,6 +207,7 @@ public class DBN {
 					if(testOneStep(scanDocument(i,totalInput-j),cat3)) {
 						success++;
 						right[3]++;
+						//System.out.println("SUCCESS: CAT: " + i);
 					}
 					tot[3]++;
 					break;
@@ -208,6 +215,7 @@ public class DBN {
 					if(testOneStep(scanDocument(i,totalInput-j),cat4)) {
 						success++;
 						right[4]++;
+						//System.out.println("SUCCESS: CAT: " + i);
 					}
 					tot[4]++;
 					break;
@@ -216,14 +224,18 @@ public class DBN {
 		}
 		//Output the results at the end of experiments
 		System.out.println("Final Results: " + ((float)success/((float)totalInput*0.1*5))*100 + "% " + success + " " + totalInput*0.1*5);
-		System.out.println("Right:");
-		for(int i : right) {
-			System.out.println(i);
-		}
-		System.out.println("TOT:");
-		for(int i : tot) {
-			System.out.println(i);
-		}
+		System.out.println();
+		return (float)((float)success/((float)totalInput*0.1*5))*100;
+		
+		
+		//System.out.println("Right:");
+		//for(int i : right) {
+		//	System.out.println(i);
+		//}
+		//System.out.println("TOT:");
+		//for(int i : tot) {
+		//	System.out.println(i);
+		//}
 		
 		
 	}
@@ -253,10 +265,11 @@ public class DBN {
 		boolean cat4[] = new boolean[5];
 		cat4[4] = true;
 		
+		
 		int success = 0;
 		
 		//
-		//training=540;
+		//training=270;
 		//
 		
 		int right[]=new int[5];
@@ -272,8 +285,7 @@ public class DBN {
 			//int cat = (int) (Math.floor(Math.random()*2));
 			//int cat = 0;
 			int doc = ((int) (Math.floor(Math.random()*docsPerCat)) + 1);
-			
-			System.out.println("CAT: " + cat + " DOC: " + doc);
+			//System.out.println("CAT: " + cat + " DOC: " + doc);
 			if(scanned[cat][doc-1] == false) {
 				scanned[cat][doc-1] = true;
 				switch(cat) {
@@ -318,14 +330,14 @@ public class DBN {
 		}
 		
 		System.out.println("TRAINING " + success + " " + totalScanned + " " + (float)success/(float)totalScanned * 100 + "%");
-		System.out.println("Right:");
-		for(int i : right) {
-			System.out.println(i);
-		}
-		System.out.println("TOTAL:");
-		for(int i : tot) {
-			System.out.println(i);
-		}
+		//System.out.println("Right:");
+		//for(int i : right) {
+		//	System.out.println(i);
+		//}
+		//System.out.println("TOTAL:");
+		//for(int i : tot) {
+		//	System.out.println(i);
+		//}
 		
 		//if (((((float)success/(float)totalScanned) * 100) < 19.5 && (((float)success/(float)totalScanned) * 100) > 20.5)) {
 		//	return true;
@@ -352,12 +364,14 @@ public class DBN {
 		
 		//Debug
 		//May remove
-		//System.out.println("OUTPUT");
-		//System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[0].getState() + " | Expected: " + expected[0]);
-		//System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[1].getState() + " | Expected: " + expected[1]);
-		//System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[2].getState() + " | Expected: " + expected[2]);
-		//System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[3].getState() + " | Expected: " + expected[3]);
-		//System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[4].getState() + " | Expected: " + expected[4]);
+		/*
+		System.out.println("OUTPUT");
+		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[0].getState() + " | Expected: " + expected[0]);
+		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[1].getState() + " | Expected: " + expected[1]);
+		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[2].getState() + " | Expected: " + expected[2]);
+		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[3].getState() + " | Expected: " + expected[3]);
+		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[4].getState() + " | Expected: " + expected[4]);
+		*/
 		
 		//if no errors, dont backpropagate
 		int error = 0;
@@ -370,10 +384,12 @@ public class DBN {
 		
 		//Backpropagate error
 		if(error > 0) {
+			//System.out.println("BRACKPROPAGATING....");
 			//Backpropogate the corrected output
 			for(int i = this.rbmArray.length-1;i > -1; i--) {
 				this.rbmArray[i].reconstructionPhase(); //activate nodes on row1
 				this.rbmArray[i].updateWeightsAndBias(); //compare current/previous states and update the weights/bias
+				//visualizeNetwork();
 			}
 			return false;
 		}else {
@@ -431,5 +447,25 @@ public class DBN {
 	 */
 	public void setBeginning(boolean[] values) {
 		this.rbmArray[0].setRow1(values);
+	}
+	
+	public void visualizeNetwork() {
+		String [] network = new String[500];
+		for(int i = 0; i < this.rbmArray.length; i++) {
+			Node[] row = this.rbmArray[i].getRow1();
+			for(int j = 0; j < row.length; j++) {
+				network[j] = network[j] + " " + row[j].getState() + " | ";
+			}
+			
+		}
+		Node[] row = this.rbmArray[rbmArray.length-1].getRow2();
+		for(int j = 0; j < row.length; j++) {
+			network[j] = network[j] + " " + row[j].getState() + " | ";
+		}
+
+		for(int i = 0; i < network.length; i++) {
+			System.out.println(network[i]);
+		}
+		System.out.println(" ");
 	}
 }
