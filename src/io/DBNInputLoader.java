@@ -47,11 +47,11 @@ public class DBNInputLoader {
 	public List<String> getDocument(int cat, int i){
 		String path;
 		if(i < 10){ //adjust path to account for preceding 0s
-			path = docDir + "\\" + cat + "\\00" + i + ".txt";
+			path = docDir + "/" + cat + "/00" + i + ".txt";
 		}else if(i < 100){
-			path = docDir + "\\" + cat + "\\0" + i + ".txt";
+			path = docDir + "/" + cat + "/0" + i + ".txt";
 		}else{
-			path = docDir + "\\" + cat + "\\" + i + ".txt";
+			path = docDir + "/" + cat + "/" + i + ".txt";
 		}
 		
 		File f = new File(path);
@@ -107,7 +107,7 @@ public class DBNInputLoader {
 		String top50[][] = new String[numCat][50];
 		
 		for(int j = 0; j < this.numCat; j++) {
-			File f = new File(top50Dir + "\\" + j + "\\top50.txt"); //append filepath
+			File f = new File(top50Dir + "/" + j + "/top50.txt"); //append filepath
 			try { //read
 				InputStream in = new FileInputStream(f);
 				Reader r = new InputStreamReader(in, Charset.forName("ASCII"));
@@ -132,7 +132,7 @@ public class DBNInputLoader {
 		String top2[][] = new String[numCat][1];
 		
 		for(int j = 0; j < this.numCat; j++) {
-			File f = new File(top50Dir + "\\" + j + "\\top50.txt"); //append filepath
+			File f = new File(top50Dir + "/" + j + "/top50.txt"); //append filepath
 			try { //read
 				InputStream in = new FileInputStream(f);
 				Reader r = new InputStreamReader(in, Charset.forName("ASCII"));

@@ -115,15 +115,15 @@ public class DBNTest {
 		names[3] = "sport";
 		names[4] = "tech";
 		//
-		
-		DBN dbn = new DBN(2,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\small\\top50","C:\\Users\\Justin\\Documents\\bbc\\small",2,docs,names);
-		
+		for(int g = 0; g < 5; g++){
+		DBN dbn = new DBN(2,arr,0.1f,"/home/justin/Documents/bbc/small/top50","/home/justin/Documents/bbc/small",2,docs,names);
+
 		//experiments
 		System.out.println("DBN PRETRAINING TEST");
 		dbn.fullPreTraining(4);
 
 		System.out.println("DBN TRAINING TEST");
-		for(int j = 0; j < 10000; j++)
+		for(int j = 0; j < 1000; j++)
 			dbn.fullBackPropagation(4);
 
 
@@ -131,6 +131,7 @@ public class DBNTest {
 		System.out.println("DONE BACKPROP");
 
 		dbn.fullTest(2);
+		}
 	}
 	
 	@Test

@@ -158,16 +158,10 @@ public class DBN {
 	public float fullTest(int totalInput){
 		
 		//Hardcode expected values of each category
-		boolean cat0[] = new boolean[5];
+		boolean cat0[] = new boolean[2];
 		cat0[0] = true;
-		boolean cat1[] = new boolean[5];
+		boolean cat1[] = new boolean[2];
 		cat1[1] = true;
-		boolean cat2[] = new boolean[5];
-		cat2[2] = true;
-		boolean cat3[] = new boolean[5];
-		cat3[3] = true;
-		boolean cat4[] = new boolean[5];
-		cat4[4] = true;
 		
 		int success = 0;
 		
@@ -176,8 +170,9 @@ public class DBN {
 		
 		//Walk through all test documents
 		//for(int i = 0;i < this.top50.length; i++) {
-		for(int i = 0;i < 5; i++) {
-			for(int j = 0; j < (int)(totalInput * 0.1); j++) {
+		for(int i = 0;i < 2; i++) {
+			for(int j = 0; j < 1; j++) {
+				System.out.println("rawr");
 				//System.out.println(totalInput +  " " + ((int)(totalInput * 0.1)-j));
 				switch(i) {
 				case 0:
@@ -196,37 +191,13 @@ public class DBN {
 					}
 					tot[1]++;
 					break;
-				case 2:
-					if(testOneStep(scanDocument(i,totalInput-j),cat2)) {
-						success++;
-						right[2]++;
-						//System.out.println("SUCCESS: CAT: " + i);
-					}
-					tot[2]++;
-					break;
-				case 3:
-					if(testOneStep(scanDocument(i,totalInput-j),cat3)) {
-						success++;
-						right[3]++;
-						//System.out.println("SUCCESS: CAT: " + i);
-					}
-					tot[3]++;
-					break;
-				case 4:
-					if(testOneStep(scanDocument(i,totalInput-j),cat4)) {
-						success++;
-						right[4]++;
-						//System.out.println("SUCCESS: CAT: " + i);
-					}
-					tot[4]++;
-					break;
 				}
 			}
 		}
 		//Output the results at the end of experiments
-		System.out.println("Final Results: " + ((float)success/((float)totalInput*0.1*5))*100 + "% " + success + " " + totalInput*0.1*5);
+		System.out.println("Final Results: " + ((float)success/(2))*100 + "% " + success + " " + 1*2);
 		System.out.println();
-		return (float)((float)success/((float)totalInput*0.1*5))*100;
+		return (float)((float)success/((float)totalInput*0.1*2))*100;
 		
 		
 		//System.out.println("Right:");
@@ -398,14 +369,9 @@ public class DBN {
 		System.out.println("OUTPUT");
 		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[0].getState() + " | Expected: " + expected[0]);
 		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[1].getState() + " | Expected: " + expected[1]);
-		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[2].getState() + " | Expected: " + expected[2]);
-		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[3].getState() + " | Expected: " + expected[3]);
-		System.out.println("Actual: " + rbmArray[rbmArray.length-1].getRow2()[4].getState() + " | Expected: " + expected[4]);
 		*/
-		
 		//if no errors, dont backpropagate
 		int error = 0;
-		System.out.println(expected.length);
 		for(int i = 0;i < expected.length; i++) {
 			if(expected[i] != rbmArray[rbmArray.length-1].getRow2()[i].getState()) { //Check for error
 				error++;
@@ -438,6 +404,7 @@ public class DBN {
 	 */
 	public boolean[] scanDocument(int cat, int doc) {
 		List<String> document = loader.getDocument(cat,doc);
+		//System.out.println("word: " + document.get(0));
 		boolean values[] = new boolean [top50.length*top50[cat].length]; //hard coded for simplicity, extremely unlikely to change
 		//1d array for simplicity
 		for(int i = 0; i < top50.length; i++) {

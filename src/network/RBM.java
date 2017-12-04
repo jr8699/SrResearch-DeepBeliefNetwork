@@ -97,7 +97,10 @@ public class RBM {
 		int w = 0;
 		for(int i = 0;i < this.row1.length;i++) {
 			for(int j = 0;j < this.row2.length;j++) {
-				this.weights[w++] = new Weight((float)Math.random(),row1[i],row2[j]);
+				float num = (float)Math.random();
+				num *= (Math.floor(Math.random()*2) == 1 ? 1 : -1);
+				//this.weights[w++] = new Weight((float)Math.random(),row1[i],row2[j]);
+				this.weights[w++] = new Weight(num,row1[i],row2[j]);
 			}
 		}
 	}
@@ -133,7 +136,7 @@ public class RBM {
 	 * @return
 	 */
 	public float calcProbability(float sum, float b) {
-		float AE = - b - sum; //Activation energy
+		float AE = -b - sum; //Activation energy
 		//System.out.println("|BIAS: " + -b + " SUM: " + -sum + " |" );
 		return (float)(1/(1+Math.exp(AE))); //Sigmoid
 	}
@@ -159,10 +162,10 @@ public class RBM {
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
 			if(rand>=probability) { //toggle the node
 				n.setState(true);
-				//System.out.println("Node Activated with probability : " + probability + n);
+				System.out.println("Node Activated with probability : " + probability + n);
 			}else {
 				n.setState(false);
-				//System.out.println("Node Deactivated with probability : " + probability + n);
+				System.out.println("Node Deactivated with probability : " + probability + n);
 			}
 		}else {
 			Node n = nodeWeights[0].getLeft(); //should be same left node for all
@@ -178,10 +181,10 @@ public class RBM {
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
 			if(rand>=probability) { //toggle the node
 				n.setState(true);
-				//System.out.println("Node Activated with probability : " + probability);
+				System.out.println("Node Activated with probability : " + probability);
 			}else {
 				n.setState(false);
-				//System.out.println("Node Deactivated with probability : " + probability);
+				System.out.println("Node Deactivated with probability : " + probability);
 			}
 		}
 	}
@@ -208,6 +211,11 @@ public class RBM {
 	}
 	
 	public void reconstructionPhase() {
+		System.out.println("");
+		System.out.println("----------------------");
+		System.out.println("");
+		System.out.println("Reconstruction");
+		dumpRBM();
 		//Do C.D. the other way (Reconstruction)
 		//System.out.println("Reconstruction:");
 		for(int i = 0; i < row1.length;i++) {
@@ -228,6 +236,11 @@ public class RBM {
 		//An odd looking loop but it beats scanning the weights matrix thousands of times
 		//System.out.println("Activation Phase:");
 		if(this.lastRBM == false) {
+			System.out.println("");
+			System.out.println("----------------------");
+			System.out.println("");
+			System.out.println("Activation");
+			dumpRBM();
 			for(int i = 0; i < row2.length;i++) {
 				Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
 				int g = 0;
@@ -277,6 +290,12 @@ public class RBM {
 								+ weights[i].getWeight() + "   "
 								+ weights[i].getRight().getState() + "-" + weights[i].getRight());
 		}
+		
+		System.out.println("Bias (Row1 then row2): ");
+		for(int i = 0; i < bias.length; i++){
+			System.out.println(bias[i]);
+		}
+		System.out.println(" ");
 	}
 	
 	/**
@@ -327,7 +346,10 @@ public class RBM {
 	 * @return
 	 */
 	public int softmax() {
-		//System.out.println("SOFTMAX ACTIVATED");
+		System.out.println("");
+		System.out.println("----------------------");
+		System.out.println("");
+		System.out.println("SoftMax Activation");
 		float energies[] = new float[row2.length];
 		for(int i = 0; i < row2.length; i++) { //find all activation energies of the last row
 			Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
@@ -347,7 +369,8 @@ public class RBM {
 				//System.out.println(nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0));
 				sum += nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0);
 			}
-			energies[i] = (float) Math.exp(b - sum); //store activation energy
+			energies[i] = (float) (-b - sum); //store activation energy
+			//System.out.println("Energy find " + (b - sum));
 		}
 		//Find top according to softmax
 		
@@ -363,16 +386,19 @@ public class RBM {
 		float sum = 0;
 		//sum energies
 		for(int i = 0; i < row2.length; i++) {
-			sum += energies[i]-maxEnergy;
+			//System.out.println("AE-MAX AE: "+(energies[i]-maxEnergy));
+			sum += Math.exp(energies[i]-maxEnergy);
 		}
-		//System.out.println("SUM: " + sum);
+		System.out.println("SUM: " + sum);
 		for(int i = 0; i < row2.length; i++) {
-			//System.out.println("ENERGIES: " + energies[i]);
+			System.out.println("ENERGIES: " + energies[i]);
 		}
 		//find highest
 		for(int i = 0; i < row2.length; i++) {
+			System.out.println("");
+			System.out.println("Prob: " + (Math.exp(energies[i]-maxEnergy))/sum + " SUM: " + sum);
 			//System.out.println((energies[i]-maxEnergy)/sum + " to activate node: " + i);
-			float tmpMax = (energies[i]-maxEnergy)/sum;
+			float tmpMax = (float)((Math.exp(energies[i]-maxEnergy))/sum);
 			if(tmpMax > max) {
 				index = i;
 				max = tmpMax;
@@ -387,6 +413,8 @@ public class RBM {
 				row2[i].setState(false);
 		}
 		
+		
+		dumpRBM();
 		return index;
 	}
 	
