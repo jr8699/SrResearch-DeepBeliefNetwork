@@ -160,7 +160,7 @@ public class RBM {
 			}
 			float probability = calcProbability(sum,b);
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
-			if(rand>=probability) { //toggle the node
+			if(rand<=probability) { //toggle the node
 				n.setState(true);
 				System.out.println("Node Activated with probability : " + probability + n);
 			}else {
@@ -179,7 +179,7 @@ public class RBM {
 			}
 			float probability = calcProbability(sum,b);
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
-			if(rand>=probability) { //toggle the node
+			if(rand<=probability) { //toggle the node
 				n.setState(true);
 				System.out.println("Node Activated with probability : " + probability);
 			}else {
@@ -268,14 +268,14 @@ public class RBM {
 		for(int i = 0;i < row1.length;i++) {
 			float pos = (this.row1[i].getPrevState() ? 1 : 0) * 1;
 			float neg = (this.row1[i].getState() ? 1 : 0) * 1;
-			bias[i] -= learningRate*(pos-neg);
+			//bias[i] -= learningRate*(pos-neg);
 		}
 				
 		//Update bias (row2)
 		for(int i = 0;i < row2.length;i++) {
 			float pos = (this.row2[i].getPrevState() ? 1 : 0) * 1;
 			float neg = (this.row2[i].getState() ? 1 : 0) * 1;
-			bias[i+row1.length] -= learningRate*(pos-neg);
+			//bias[i+row1.length] -= learningRate*(pos-neg);
 		}
 		
 		//System.out.println("Updated Weights");

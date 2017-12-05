@@ -77,7 +77,8 @@ public class DBNInputLoader {
 					currentWord = "";
 				}
 			}
-		
+			if(currentWord != "") doc.add(currentWord); //handle chains of bad characters
+			currentWord = "";
 			in.close();
 		}catch(Exception e) {
 			System.out.println("Bad Document index");

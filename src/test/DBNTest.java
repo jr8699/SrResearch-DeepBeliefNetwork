@@ -115,15 +115,15 @@ public class DBNTest {
 		names[3] = "sport";
 		names[4] = "tech";
 		//
-		for(int g = 0; g < 5; g++){
-		DBN dbn = new DBN(2,arr,0.1f,"/home/justin/Documents/bbc/small/top50","/home/justin/Documents/bbc/small",2,docs,names);
+		for(int g = 0; g < 1; g++){
+		DBN dbn = new DBN(2,arr,0.1f,"small/top50","small",2,docs,names);
 
 		//experiments
 		System.out.println("DBN PRETRAINING TEST");
 		dbn.fullPreTraining(4);
 
 		System.out.println("DBN TRAINING TEST");
-		for(int j = 0; j < 1000; j++)
+		for(int j = 0; j < 500; j++)
 			dbn.fullBackPropagation(4);
 
 
@@ -138,13 +138,13 @@ public class DBNTest {
 	public void testBigDBN() {
 		float results[] = new float[30];
 		for(int i =0; i < 30; i++) {
-			int arr[][] = new int[5][2];
+			int arr[][] = new int[3][2];
 			arr[0][0] = 250;
 			arr[0][1] = 100;
 			arr[1][0] = 100;
 			arr[1][1] = 100;
 			arr[2][0] = 100;
-			arr[2][1] = 5; //softmax row
+			arr[2][1] = 2; //softmax row
 		
 			//not used
 			int docs[] = new int[5];
@@ -162,7 +162,7 @@ public class DBNTest {
 			names[4] = "tech";
 		
 			//DBN dbn = new DBN(3,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\test\\top50","C:\\Users\\Justin\\Documents\\bbc\\test",5,docs,names);
-			DBN dbn = new DBN(3,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\top50","C:\\Users\\Justin\\Documents\\bbc",5,docs,names);
+			DBN dbn = new DBN(3,arr,0.1f,"small/top50","small",2,docs,names);
 			//Test scanning
 			//assert(dbn.scanDocument(0, 3)[1] == true); //Yukos
 			//assert(dbn.scanDocument(0, 3)[183] == true); //back
@@ -171,16 +171,16 @@ public class DBNTest {
 			
 			//experiments
 			System.out.println("DBN PRETRAINING TEST");
-			dbn.fullPreTraining(1500);
+			dbn.fullPreTraining(4);
 
 			System.out.println("DBN TRAINING TEST");
-			dbn.fullBackPropagation(1500);
+			dbn.fullBackPropagation(4);
 
 
 
 			System.out.println("DONE BACKPROP");
 
-			results[i] = dbn.fullTest(300);
+			results[i] = dbn.fullTest(2);
 		}
 		System.out.println("RESULTS");
 		for(float f : results) {

@@ -81,6 +81,7 @@ public class DBN {
 	public void fullPreTraining(int totalInput) {
 		int training = (int)(totalInput*0.9); //number to train on
 		float training2 = (float)(totalInput*0.9);
+		System.out.println(this.top50.length);
 		int docsPerCat = (int)Math.ceil((training2/this.top50.length));
 		int rbmTotal = rbmArray.length;
 		
