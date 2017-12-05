@@ -424,6 +424,7 @@ public class RBM {
 	 */
 	
 	public int noSoftmax() {
+		System.out.println("NoSoftmax Activation");
 		float energies[] = new float[row2.length];
 		for(int i = 0; i < row2.length; i++) { //find all activation energies of the last row
 			Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
@@ -450,6 +451,7 @@ public class RBM {
 		float maxProb = 0.0f;
 		int index = -1;
 		for(int i = 0; i < energies.length; i++) {
+			System.out.println("Prob: " + (1/(1+Math.exp(energies[i]))));
 			if((float)(1/(1+Math.exp(energies[i]))) > maxProb) {
 				maxProb = (float)(1/(1+Math.exp(energies[i])));
 				index=i;

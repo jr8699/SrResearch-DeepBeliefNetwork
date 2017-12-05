@@ -159,10 +159,12 @@ public class DBN {
 	public float fullTest(int totalInput){
 		
 		//Hardcode expected values of each category
-		boolean cat0[] = new boolean[2];
+		boolean cat0[] = new boolean[3];
 		cat0[0] = true;
-		boolean cat1[] = new boolean[2];
+		boolean cat1[] = new boolean[3];
 		cat1[1] = true;
+		boolean cat2[] = new boolean[3];
+		cat1[2] = true;
 		
 		int success = 0;
 		
@@ -171,9 +173,8 @@ public class DBN {
 		
 		//Walk through all test documents
 		//for(int i = 0;i < this.top50.length; i++) {
-		for(int i = 0;i < 2; i++) {
+		for(int i = 0;i < 3; i++) {
 			for(int j = 0; j < 1; j++) {
-				System.out.println("rawr");
 				//System.out.println(totalInput +  " " + ((int)(totalInput * 0.1)-j));
 				switch(i) {
 				case 0:
@@ -192,13 +193,21 @@ public class DBN {
 					}
 					tot[1]++;
 					break;
+				case 2:
+					if(testOneStep(scanDocument(i,totalInput-j),cat2)) {
+						success++;
+						right[2]++;
+						//System.out.println("SUCCESS: CAT: " + i);
+					}
+					tot[2]++;
+					break;
 				}
 			}
 		}
 		//Output the results at the end of experiments
-		System.out.println("Final Results: " + ((float)success/(2))*100 + "% " + success + " " + 1*2);
+		System.out.println("Final Results: " + ((float)success/(3))*100 + "% " + success + " " + 1*3);
 		System.out.println();
-		return (float)((float)success/((float)totalInput*0.1*2))*100;
+		return (float)((float)success/((float)totalInput*0.1*3))*100;
 		
 		
 		//System.out.println("Right:");
@@ -227,10 +236,12 @@ public class DBN {
 		int rbmTotal = rbmArray.length;
 		
 		//Hardcode expected values of each category
-		boolean cat0[] = new boolean[2];
+		boolean cat0[] = new boolean[3];
 		cat0[0] = true;
-		boolean cat1[] = new boolean[2];
+		boolean cat1[] = new boolean[3];
 		cat1[1] = true;
+		boolean cat2[] = new boolean[3];
+		cat1[2] = true;
 
 		
 		
@@ -305,7 +316,7 @@ public class DBN {
 		int totalScanned = 0;
 		while(totalScanned < training) {
 			//int cat = (int) (Math.floor(Math.random()*top50.length));
-			int cat = (int) (Math.floor(Math.random()*2));
+			int cat = (int) (Math.floor(Math.random()*3));
 			//int cat = 0;
 			int doc = ((int) (Math.floor(Math.random()*docsPerCat)) + 1);
 			//System.out.println("CAT: " + cat + " DOC: " + doc);
@@ -325,6 +336,13 @@ public class DBN {
 						right[1]++;
 					}
 					tot[1]++;
+					break;
+				case 2:
+					if(backpropOneStep(scanDocument(cat,doc),cat2)) {
+						success++;
+						right[2]++;
+					}
+					tot[2]++;
 					break;
 			}
 				totalScanned++;

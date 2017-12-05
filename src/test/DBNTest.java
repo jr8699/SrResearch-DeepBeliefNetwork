@@ -95,10 +95,10 @@ public class DBNTest {
 	@Test
 	public void testSmallDBN() {
 		int arr[][] = new int [2][2];
-		arr[0][0] = 2;
+		arr[0][0] = 3;
 		arr[0][1] = 3;
 		arr[1][0] = 3;
-		arr[1][1] = 2; //softmax row
+		arr[1][1] = 3; //softmax row
 		
 		//not used
 		int docs[] = new int[5];
@@ -116,14 +116,14 @@ public class DBNTest {
 		names[4] = "tech";
 		//
 		for(int g = 0; g < 1; g++){
-		DBN dbn = new DBN(2,arr,0.1f,"small/top50","small",2,docs,names);
+		DBN dbn = new DBN(2,arr,0.1f,"small/top50","small",3,docs,names);
 
 		//experiments
 		System.out.println("DBN PRETRAINING TEST");
-		dbn.fullPreTraining(4);
+		//dbn.fullPreTraining(4);
 
 		System.out.println("DBN TRAINING TEST");
-		for(int j = 0; j < 500; j++)
+		for(int j = 0; j < 10; j++)
 			dbn.fullBackPropagation(4);
 
 
