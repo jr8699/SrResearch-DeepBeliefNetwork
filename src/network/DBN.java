@@ -164,7 +164,7 @@ public class DBN {
 		boolean cat1[] = new boolean[3];
 		cat1[1] = true;
 		boolean cat2[] = new boolean[3];
-		cat1[2] = true;
+		cat2[2] = true;
 		
 		int success = 0;
 		
@@ -241,7 +241,7 @@ public class DBN {
 		boolean cat1[] = new boolean[3];
 		cat1[1] = true;
 		boolean cat2[] = new boolean[3];
-		cat1[2] = true;
+		cat2[2] = true;
 
 		
 		

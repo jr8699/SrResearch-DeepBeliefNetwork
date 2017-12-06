@@ -123,7 +123,7 @@ public class DBNTest {
 		//dbn.fullPreTraining(4);
 
 		System.out.println("DBN TRAINING TEST");
-		for(int j = 0; j < 10; j++)
+		for(int j = 0; j < 1000; j++)
 			dbn.fullBackPropagation(4);
 
 

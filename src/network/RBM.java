@@ -137,6 +137,7 @@ public class RBM {
 	 */
 	public float calcProbability(float sum, float b) {
 		float AE = -b - sum; //Activation energy
+		System.out.println("Energy: " + AE);
 		//System.out.println("|BIAS: " + -b + " SUM: " + -sum + " |" );
 		return (float)(1/(1+Math.exp(AE))); //Sigmoid
 	}
@@ -226,6 +227,10 @@ public class RBM {
 			}
 			toggleNode(1,i,nodeWeights);
 		}
+		
+		System.out.println("After Recontruction");
+		System.out.println("");
+		dumpRBM();
 	}
 	
 	/**
@@ -250,8 +255,8 @@ public class RBM {
 				toggleNode(2,i,nodeWeights);
 			}
 		}else { //constrain the last row of DBN
-			softmax();
-			//noSoftmax();
+			//softmax();
+			noSoftmax();
 		}
 	}
 	
@@ -261,6 +266,7 @@ public class RBM {
 			float pos = (w.getRight().getPrevState() ? 1 : 0) * (w.getLeft().getPrevState() ? 1 : 0);
 			float neg = (w.getRight().getState() ? 1 : 0) * (w.getLeft().getState() ? 1 : 0);
 			w.setWeight(w.getWeight()-(learningRate*(pos-neg)));
+			//w.setWeight(w.getWeight()-(learningRate*(neg-pos)));
 		}
 		
 		
@@ -424,6 +430,8 @@ public class RBM {
 	 */
 	
 	public int noSoftmax() {
+		
+		System.out.println("");
 		System.out.println("NoSoftmax Activation");
 		float energies[] = new float[row2.length];
 		for(int i = 0; i < row2.length; i++) { //find all activation energies of the last row
@@ -444,7 +452,8 @@ public class RBM {
 				//System.out.println(nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0));
 				sum += nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0);
 			}
-			energies[i] = (float) Math.exp(b - sum); //store activation energy
+			System.out.println("Energy: " + (-b - sum));
+			energies[i] = (float) Math.exp(-b - sum); //store activation energy
 		}
 		
 		//Find max energy to get around underflow problem
@@ -457,6 +466,34 @@ public class RBM {
 				index=i;
 			}
 		}
+		if (maxProb > 0.001f) {
+			int[] choice = new int[row2.length];
+			int choices = 0;
+			for (int i = 0; i < energies.length; i++) {
+				if ((float) (1 / (1 + Math.exp(energies[i]))) > maxProb - 0.00001) {
+					choice[i] = i;
+					choices++;
+				}
+			}
+			if (choices > 1) {
+				int[] options = new int[choices];
+				int x = 0;
+				for (int i = 0; i < choice.length; i++) {
+					if (choice[i] != 0) {
+						options[x] = i;
+						x++;
+					}
+				}
+				index = options[(int) Math.random() * choices];
+			}
+		}
+		else
+		{
+			// Nothing was strong enough to fire.
+			index = -1;
+		}
+		
+		
 		
 		//activate appropriate nodes
 		for(int i = 0; i < row2.length; i++) {
@@ -465,6 +502,8 @@ public class RBM {
 			}else
 				row2[i].setState(false);
 		}
+		
+		dumpRBM();
 		
 		return index;
 	}
