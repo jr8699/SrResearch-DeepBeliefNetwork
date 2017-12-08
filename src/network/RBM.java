@@ -137,7 +137,7 @@ public class RBM {
 	 */
 	public float calcProbability(float sum, float b) {
 		float AE = -b - sum; //Activation energy
-		System.out.println("Energy: " + AE);
+		//System.out.println("Energy: " + AE);
 		//System.out.println("|BIAS: " + -b + " SUM: " + -sum + " |" );
 		return (float)(1/(1+Math.exp(AE))); //Sigmoid
 	}
@@ -163,10 +163,10 @@ public class RBM {
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
 			if(rand<=probability) { //toggle the node
 				n.setState(true);
-				System.out.println("Node Activated with probability : " + probability + n);
+				//System.out.println("Node Activated with probability : " + probability + n);
 			}else {
 				n.setState(false);
-				System.out.println("Node Deactivated with probability : " + probability + n);
+				//System.out.println("Node Deactivated with probability : " + probability + n);
 			}
 		}else {
 			Node n = nodeWeights[0].getLeft(); //should be same left node for all
@@ -182,10 +182,10 @@ public class RBM {
 			float rand = (float) Math.random(); //Random number between 0.0 and 1.0
 			if(rand<=probability) { //toggle the node
 				n.setState(true);
-				System.out.println("Node Activated with probability : " + probability);
+				//System.out.println("Node Activated with probability : " + probability);
 			}else {
 				n.setState(false);
-				System.out.println("Node Deactivated with probability : " + probability);
+				//System.out.println("Node Deactivated with probability : " + probability);
 			}
 		}
 	}
@@ -212,11 +212,11 @@ public class RBM {
 	}
 	
 	public void reconstructionPhase() {
-		System.out.println("");
-		System.out.println("----------------------");
-		System.out.println("");
-		System.out.println("Reconstruction");
-		dumpRBM();
+		//System.out.println("");
+		//System.out.println("----------------------");
+		//System.out.println("");
+		//System.out.println("Reconstruction");
+		//dumpRBM();
 		//Do C.D. the other way (Reconstruction)
 		//System.out.println("Reconstruction:");
 		for(int i = 0; i < row1.length;i++) {
@@ -224,13 +224,14 @@ public class RBM {
 			int g = 0;
 			for(int j = 0;j < row2.length;j++) { //gather the weights
 				nodeWeights[g++] = weights[j+(i*row2.length)];
+				//System.out.println("NODE: " + nodeWeights[g-1].getLeft());
 			}
 			toggleNode(1,i,nodeWeights);
 		}
 		
-		System.out.println("After Recontruction");
-		System.out.println("");
-		dumpRBM();
+		//System.out.println("After Recontruction");
+		//System.out.println("");
+		//dumpRBM();
 	}
 	
 	/**
@@ -241,11 +242,13 @@ public class RBM {
 		//An odd looking loop but it beats scanning the weights matrix thousands of times
 		//System.out.println("Activation Phase:");
 		if(this.lastRBM == false) {
+			/*
 			System.out.println("");
 			System.out.println("----------------------");
 			System.out.println("");
 			System.out.println("Activation");
-			dumpRBM();
+			*/
+			//dumpRBM();
 			for(int i = 0; i < row2.length;i++) {
 				Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
 				int g = 0;
@@ -274,14 +277,14 @@ public class RBM {
 		for(int i = 0;i < row1.length;i++) {
 			float pos = (this.row1[i].getPrevState() ? 1 : 0) * 1;
 			float neg = (this.row1[i].getState() ? 1 : 0) * 1;
-			//bias[i] -= learningRate*(pos-neg);
+			bias[i] -= learningRate*(pos-neg);
 		}
 				
 		//Update bias (row2)
 		for(int i = 0;i < row2.length;i++) {
 			float pos = (this.row2[i].getPrevState() ? 1 : 0) * 1;
 			float neg = (this.row2[i].getState() ? 1 : 0) * 1;
-			//bias[i+row1.length] -= learningRate*(pos-neg);
+			bias[i+row1.length] -= learningRate*(pos-neg);
 		}
 		
 		//System.out.println("Updated Weights");
@@ -431,8 +434,8 @@ public class RBM {
 	
 	public int noSoftmax() {
 		
-		System.out.println("");
-		System.out.println("NoSoftmax Activation");
+		//System.out.println("");
+		//System.out.println("NoSoftmax Activation");
 		float energies[] = new float[row2.length];
 		for(int i = 0; i < row2.length; i++) { //find all activation energies of the last row
 			Weight nodeWeights[] = new Weight[row1.length]; //store all weight values for a node
@@ -452,7 +455,7 @@ public class RBM {
 				//System.out.println(nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0));
 				sum += nodeWeights[h].getWeight() * (nodeWeights[h].getLeft().getState() ? 1 : 0);
 			}
-			System.out.println("Energy: " + (-b - sum));
+			//System.out.println("Energy: " + (-b - sum));
 			energies[i] = (float) Math.exp(-b - sum); //store activation energy
 		}
 		
@@ -460,7 +463,7 @@ public class RBM {
 		float maxProb = 0.0f;
 		int index = -1;
 		for(int i = 0; i < energies.length; i++) {
-			System.out.println("Prob: " + (1/(1+Math.exp(energies[i]))));
+			//System.out.println("Prob: " + (1/(1+Math.exp(energies[i]))));
 			if((float)(1/(1+Math.exp(energies[i]))) > maxProb) {
 				maxProb = (float)(1/(1+Math.exp(energies[i])));
 				index=i;
@@ -503,7 +506,7 @@ public class RBM {
 				row2[i].setState(false);
 		}
 		
-		dumpRBM();
+		//dumpRBM();
 		
 		return index;
 	}

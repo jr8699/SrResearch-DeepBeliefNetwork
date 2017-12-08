@@ -120,10 +120,11 @@ public class DBNTest {
 
 		//experiments
 		System.out.println("DBN PRETRAINING TEST");
-		//dbn.fullPreTraining(4);
+		for(int i = 0; i < 50; i++)
+		dbn.fullPreTraining(4);
 
 		System.out.println("DBN TRAINING TEST");
-		for(int j = 0; j < 1000; j++)
+		for(int j = 0; j < 5; j++)
 			dbn.fullBackPropagation(4);
 
 
@@ -137,14 +138,16 @@ public class DBNTest {
 	@Test
 	public void testBigDBN() {
 		float results[] = new float[30];
-		for(int i =0; i < 30; i++) {
-			int arr[][] = new int[3][2];
+		for(int i =0; i < 20; i++) {
+			int arr[][] = new int[4][2];
 			arr[0][0] = 250;
 			arr[0][1] = 100;
 			arr[1][0] = 100;
 			arr[1][1] = 100;
 			arr[2][0] = 100;
-			arr[2][1] = 2; //softmax row
+			arr[2][1] = 100;
+			arr[3][0] = 100;
+			arr[3][1] = 5; //softmax row
 		
 			//not used
 			int docs[] = new int[5];
@@ -161,8 +164,9 @@ public class DBNTest {
 			names[3] = "sport";
 			names[4] = "tech";
 		
-			//DBN dbn = new DBN(3,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\test\\top50","C:\\Users\\Justin\\Documents\\bbc\\test",5,docs,names);
-			DBN dbn = new DBN(3,arr,0.1f,"small/top50","small",2,docs,names);
+			//DBN dbn = new DBN(4,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\test\\top50","C:\\Users\\Justin\\Documents\\bbc\\test",5,docs,names);
+			DBN dbn = new DBN(4,arr,0.1f,"bbc/top50","bbc",5,docs,names);
+			//DBN dbn = new DBN(3,arr,0.1f,"small/top50","small",5,docs,names);
 			//Test scanning
 			//assert(dbn.scanDocument(0, 3)[1] == true); //Yukos
 			//assert(dbn.scanDocument(0, 3)[183] == true); //back
@@ -171,16 +175,18 @@ public class DBNTest {
 			
 			//experiments
 			System.out.println("DBN PRETRAINING TEST");
-			dbn.fullPreTraining(4);
+			for(int g = 0; g < 5; g++)
+			//dbn.fullPreTraining(50);
 
 			System.out.println("DBN TRAINING TEST");
-			dbn.fullBackPropagation(4);
+			for(int g = 0; g < 5; g++)
+			dbn.fullBackPropagation(1500);
 
 
 
 			System.out.println("DONE BACKPROP");
 
-			results[i] = dbn.fullTest(2);
+			results[i] = dbn.fullTest(300);
 		}
 		System.out.println("RESULTS");
 		for(float f : results) {

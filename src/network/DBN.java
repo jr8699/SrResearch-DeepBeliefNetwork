@@ -68,8 +68,8 @@ public class DBN {
 		this.rbmArray[rbmArray.length-1].setLast(true);
 		
 		//Load top50 words
-		//loadTop50();
-		this.top50 = this.loader.loadTop2();
+		loadTop50();
+		//this.top50 = this.loader.loadTop2();
 		//this.top50 = new String[5][50];
 	}
 	
@@ -159,12 +159,16 @@ public class DBN {
 	public float fullTest(int totalInput){
 		
 		//Hardcode expected values of each category
-		boolean cat0[] = new boolean[3];
+		boolean cat0[] = new boolean[5];
 		cat0[0] = true;
-		boolean cat1[] = new boolean[3];
+		boolean cat1[] = new boolean[5];
 		cat1[1] = true;
-		boolean cat2[] = new boolean[3];
+		boolean cat2[] = new boolean[5];
 		cat2[2] = true;
+		boolean cat3[] = new boolean[5];
+		cat3[3] = true;
+		boolean cat4[] = new boolean[5];
+		cat4[4] = true;
 		
 		int success = 0;
 		
@@ -173,8 +177,8 @@ public class DBN {
 		
 		//Walk through all test documents
 		//for(int i = 0;i < this.top50.length; i++) {
-		for(int i = 0;i < 3; i++) {
-			for(int j = 0; j < 1; j++) {
+		for(int i = 0;i < 5; i++) {
+			for(int j = 0; j < (int)(totalInput * 0.1); j++) {
 				//System.out.println(totalInput +  " " + ((int)(totalInput * 0.1)-j));
 				switch(i) {
 				case 0:
@@ -201,13 +205,29 @@ public class DBN {
 					}
 					tot[2]++;
 					break;
+				case 3:
+					if(testOneStep(scanDocument(i,totalInput-j),cat3)) {
+						success++;
+						right[3]++;
+						//System.out.println("SUCCESS: CAT: " + i);
+					}
+					tot[3]++;
+					break;
+				case 4:
+					if(testOneStep(scanDocument(i,totalInput-j),cat4)) {
+						success++;
+						right[4]++;
+						//System.out.println("SUCCESS: CAT: " + i);
+					}
+					tot[4]++;
+					break;
 				}
 			}
 		}
 		//Output the results at the end of experiments
-		System.out.println("Final Results: " + ((float)success/(3))*100 + "% " + success + " " + 1*3);
+		System.out.println("Final Results: " + ((float)success/((float)totalInput*0.1*5))*100 + "% " + success + " " + totalInput*0.1*5);
 		System.out.println();
-		return (float)((float)success/((float)totalInput*0.1*3))*100;
+		return (float)((float)success/((float)totalInput*0.1*5))*100;
 		
 		
 		//System.out.println("Right:");
@@ -236,12 +256,16 @@ public class DBN {
 		int rbmTotal = rbmArray.length;
 		
 		//Hardcode expected values of each category
-		boolean cat0[] = new boolean[3];
+		boolean cat0[] = new boolean[5];
 		cat0[0] = true;
-		boolean cat1[] = new boolean[3];
+		boolean cat1[] = new boolean[5];
 		cat1[1] = true;
-		boolean cat2[] = new boolean[3];
+		boolean cat2[] = new boolean[5];
 		cat2[2] = true;
+		boolean cat3[] = new boolean[5];
+		cat3[3] = true;
+		boolean cat4[] = new boolean[5];
+		cat4[4] = true;
 
 		
 		
@@ -253,7 +277,7 @@ public class DBN {
 		
 		int right[]=new int[5];
 		int tot[]= new int[5];
-		/*
+		
 		//keep track of docs
 		boolean scanned[][] = new boolean[this.top50.length][docsPerCat];
 		//Generate random cat and doc index
@@ -307,8 +331,9 @@ public class DBN {
 				totalScanned++;
 			}
 		}
-		*/
 		
+		
+		/*
 		//keep track of docs
 		boolean scanned[][] = new boolean[this.top50.length][docsPerCat];
 		//Generate random cat and doc index
@@ -348,12 +373,13 @@ public class DBN {
 				totalScanned++;
 			}
 		}
+		*/
 		
 		System.out.println("TRAINING " + success + " " + totalScanned + " " + (float)success/(float)totalScanned * 100 + "%");
-		//System.out.println("Right:");
-		//for(int i : right) {
-		//	System.out.println(i);
-		//}
+		System.out.println("Right:");
+		for(int i : right) {
+			System.out.println(i);
+		}
 		//System.out.println("TOTAL:");
 		//for(int i : tot) {
 		//	System.out.println(i);
@@ -403,7 +429,10 @@ public class DBN {
 			//System.out.println("BRACKPROPAGATING....");
 			//Backpropogate the corrected output
 			for(int i = this.rbmArray.length-1;i > -1; i--) {
-				this.rbmArray[i].reconstructionPhase(); //activate nodes on row1
+				if(i!=0)
+					this.rbmArray[i].reconstructionPhase(); //activate nodes on row1
+				else
+					this.rbmArray[0].setRow1(input);
 				this.rbmArray[i].updateWeightsAndBias(); //compare current/previous states and update the weights/bias
 				//visualizeNetwork();
 			}
