@@ -129,6 +129,10 @@ public class DBNInputLoader {
 		return top50;
 	}
 	
+	/**
+	 * Debugging function to run a very small DBN
+	 * @return
+	 */
 	public String[][] loadTop2(){
 		String top2[][] = new String[numCat][1];
 		

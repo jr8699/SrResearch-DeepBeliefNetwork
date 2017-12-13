@@ -211,6 +211,9 @@ public class RBM {
 		//System.out.println("PreTraining step finished!");
 	}
 	
+	/**
+	 * Create a reconstruction of the input
+	 */
 	public void reconstructionPhase() {
 		//System.out.println("");
 		//System.out.println("----------------------");

@@ -238,8 +238,6 @@ public class DBN {
 		//for(int i : tot) {
 		//	System.out.println(i);
 		//}
-		
-		
 	}
 	
 	/**
@@ -332,49 +330,6 @@ public class DBN {
 			}
 		}
 		
-		
-		/*
-		//keep track of docs
-		boolean scanned[][] = new boolean[this.top50.length][docsPerCat];
-		//Generate random cat and doc index
-		//True --> already used that document
-		int totalScanned = 0;
-		while(totalScanned < training) {
-			//int cat = (int) (Math.floor(Math.random()*top50.length));
-			int cat = (int) (Math.floor(Math.random()*3));
-			//int cat = 0;
-			int doc = ((int) (Math.floor(Math.random()*docsPerCat)) + 1);
-			//System.out.println("CAT: " + cat + " DOC: " + doc);
-			if(scanned[cat][doc-1] == false) {
-				scanned[cat][doc-1] = true;
-				switch(cat) {
-				case 0:
-					if(backpropOneStep(scanDocument(cat,doc),cat0)) {
-						success++;
-						right[0]++;
-					}
-					tot[0]++;
-					break;
-				case 1:
-					if(backpropOneStep(scanDocument(cat,doc),cat1)) {
-						success++;
-						right[1]++;
-					}
-					tot[1]++;
-					break;
-				case 2:
-					if(backpropOneStep(scanDocument(cat,doc),cat2)) {
-						success++;
-						right[2]++;
-					}
-					tot[2]++;
-					break;
-			}
-				totalScanned++;
-			}
-		}
-		*/
-		
 		System.out.println("TRAINING " + success + " " + totalScanned + " " + (float)success/(float)totalScanned * 100 + "%");
 		System.out.println("Right:");
 		for(int i : right) {
@@ -384,11 +339,6 @@ public class DBN {
 		//for(int i : tot) {
 		//	System.out.println(i);
 		//}
-		
-		//if (((((float)success/(float)totalScanned) * 100) < 19.5 && (((float)success/(float)totalScanned) * 100) > 20.5)) {
-		//	return true;
-		//}else
-		//	return false;
 		
 		if((float)success/(float)totalScanned != 0.8) {
 			return false;
@@ -494,6 +444,10 @@ public class DBN {
 	public void setBeginning(boolean[] values) {
 		this.rbmArray[0].setRow1(values);
 	}
+	
+	/**
+	 * Dumps the network, incredibly unreadable at the moment but it works
+	 */
 	
 	public void visualizeNetwork() {
 		String [] network = new String[500];

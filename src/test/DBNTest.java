@@ -164,8 +164,8 @@ public class DBNTest {
 			names[3] = "sport";
 			names[4] = "tech";
 		
-			//DBN dbn = new DBN(4,arr,0.1f,"C:\\Users\\Justin\\Documents\\bbc\\test\\top50","C:\\Users\\Justin\\Documents\\bbc\\test",5,docs,names);
-			DBN dbn = new DBN(4,arr,0.1f,"bbc/top50","bbc",5,docs,names);
+			DBN dbn = new DBN(4,arr,0.1f,"bbc/test/top50","bbc/test",5,docs,names);
+			//DBN dbn = new DBN(4,arr,0.1f,"bbc/top50","bbc",5,docs,names);
 			//DBN dbn = new DBN(3,arr,0.1f,"small/top50","small",5,docs,names);
 			//Test scanning
 			//assert(dbn.scanDocument(0, 3)[1] == true); //Yukos
@@ -176,17 +176,17 @@ public class DBNTest {
 			//experiments
 			System.out.println("DBN PRETRAINING TEST");
 			for(int g = 0; g < 5; g++)
-			//dbn.fullPreTraining(50);
+			dbn.fullPreTraining(50);
 
 			System.out.println("DBN TRAINING TEST");
-			for(int g = 0; g < 5; g++)
-			dbn.fullBackPropagation(1500);
+			for(int g = 0; g < 10; g++)
+			dbn.fullBackPropagation(50);
 
 
 
 			System.out.println("DONE BACKPROP");
 
-			results[i] = dbn.fullTest(300);
+			results[i] = dbn.fullTest(10);
 		}
 		System.out.println("RESULTS");
 		for(float f : results) {
